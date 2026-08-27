@@ -819,6 +819,7 @@ a:focus-visible {
     linear-gradient(160deg, rgba(60, 43, 21, 0.86), rgba(10, 8, 7, 0.97)),
     var(--onyx);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 34px 100px rgba(216, 170, 83, 0.18);
+  animation: crownSeatEntrance 920ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .showcase-card.rank-1::after {
@@ -871,7 +872,7 @@ a:focus-visible {
 
 .showcase-topline {
   position: absolute;
-  top: 19px;
+  top: 26px;
   left: 50%;
   z-index: 2;
   display: inline-flex;
@@ -1074,7 +1075,8 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-top: 76px;
   text-align: center;
 }
 
@@ -1082,7 +1084,7 @@ a:focus-visible {
   display: grid;
   width: 70px;
   height: 70px;
-  margin-top: 16px;
+  margin-top: 0;
   place-items: center;
   border: 1px solid rgba(241, 217, 154, 0.36);
   border-radius: 999px;
@@ -1173,18 +1175,17 @@ a:focus-visible {
   text-align: left;
 }
 
-.view-select select {
+.view-select .category-select {
+  width: 100%;
+}
+
+.view-select .category-trigger {
   height: 46px;
-  min-width: 0;
-  border: 1px solid rgba(241, 217, 154, 0.18);
   border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(29, 24, 20, 0.94), rgba(8, 7, 6, 0.86)),
-    var(--onyx);
-  color: #fff2cf;
-  padding: 0 42px 0 18px;
-  font-weight: 820;
-  outline: 0;
+}
+
+.view-select .category-menu {
+  z-index: 140;
 }
 
 .category-podium-grid {
@@ -1195,7 +1196,7 @@ a:focus-visible {
 .category-podium-card {
   position: relative;
   display: grid;
-  grid-template-columns: 132px minmax(190px, 1.1fr) minmax(170px, 1fr) 118px minmax(214px, auto);
+  grid-template-columns: 66px minmax(190px, 1.1fr) minmax(170px, 1fr) 118px minmax(214px, auto);
   align-items: center;
   gap: 14px;
   overflow: hidden;
@@ -1209,32 +1210,46 @@ a:focus-visible {
 }
 
 .category-podium-card.rank-1 {
-  border-color: rgba(241, 217, 154, 0.28);
-  background: linear-gradient(155deg, rgba(46, 34, 18, 0.94), rgba(8, 7, 6, 0.96));
+  border-color: rgba(241, 217, 154, 0.38);
+  background:
+    linear-gradient(155deg, rgba(64, 37, 27, 0.72), rgba(21, 13, 10, 0.96)),
+    var(--onyx);
+}
+
+.category-podium-card.rank-2 {
+  border-color: rgba(214, 213, 207, 0.26);
+}
+
+.category-podium-card.rank-3 {
+  border-color: rgba(184, 117, 69, 0.3);
 }
 
 .mini-rank {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: grid;
+  place-items: center;
   color: var(--champagne);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.mini-rank svg {
-  width: 16px;
-  height: 16px;
-  color: var(--gold);
 }
 
 .mini-rank span {
+  display: grid;
+  min-width: 42px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(241, 217, 154, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 920;
   letter-spacing: 0;
+}
+
+.category-podium-card.rank-1 .mini-rank span,
+.category-podium-card.rank-2 .mini-rank span,
+.category-podium-card.rank-3 .mini-rank span {
+  border-color: rgba(241, 217, 154, 0.3);
+  background: linear-gradient(135deg, #f1d99a, #d8aa53 46%, #b87545);
+  color: #17100a;
 }
 
 .mini-brand {
@@ -1765,6 +1780,24 @@ a:focus-visible {
   }
 }
 
+@keyframes crownSeatEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.975);
+    filter: saturate(0.7) brightness(0.82);
+  }
+  62% {
+    opacity: 1;
+    transform: translateY(-17px) scale(1.012);
+    filter: saturate(1.08) brightness(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-12px) scale(1);
+    filter: saturate(1) brightness(1);
+  }
+}
+
 @keyframes medallionGlow {
   0%,
   100% {
@@ -1805,7 +1838,7 @@ a:focus-visible {
   }
 
   .category-podium-card {
-    grid-template-columns: 122px minmax(0, 1fr) 128px;
+    grid-template-columns: 58px minmax(0, 1fr) 128px;
   }
 
   .category-podium-card .mini-headline,
@@ -2000,7 +2033,7 @@ a:focus-visible {
   }
 
   .showcase-topline {
-    top: 18px;
+    top: 24px;
     max-width: calc(100% - 170px);
     font-size: 9px;
   }

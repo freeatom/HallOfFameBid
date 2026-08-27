@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Crown, Medal } from 'lucide-react';
 import { ListingActions } from './ListingActions';
+import { CategorySelect } from './CategorySelect';
 
 type Listing = {
   id: string;
@@ -31,17 +31,12 @@ function logoFor(listing: Listing) {
   return listing.logo_url;
 }
 
-function podiumLabel(rank: number) {
-  if (rank === 1) return 'Gold';
-  if (rank === 2) return 'Platinum';
-  return 'Bronze';
-}
-
 export function PodiumExplorer({ listings, categories }: { listings: Listing[]; categories: string[] }) {
   const [view, setView] = useState('Overall');
+  const viewOptions = useMemo(() => ['Overall', ...categories], [categories]);
   const visibleListings = useMemo(() => {
     const filtered = view === 'Overall' ? listings : listings.filter((listing) => listing.category === view);
-    return filtered.slice(0, 3);
+    return filtered;
   }, [listings, view]);
 
   return (
@@ -53,63 +48,54 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
         </div>
         <label className="view-select">
           <span>Category</span>
-          <select value={view} onChange={(event) => setView(event.target.value)}>
-            <option value="Overall">Overall</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+          <CategorySelect categories={viewOptions} name="podiumCategory" value={view} onChange={setView} />
         </label>
       </div>
 
       <div className="category-podium-grid">
-        {[0, 1, 2].map((index) => {
+        {visibleListings.length ? visibleListings.map((listing, index) => {
           const rank = index + 1;
-          const listing = visibleListings[index];
           return (
             <article className={`category-podium-card rank-${rank}`} key={listing?.id ?? `${view}-${rank}`}>
               <div className="mini-rank">
-                {rank === 1 ? <Crown aria-hidden="true" /> : <Medal aria-hidden="true" />}
                 <span>#{rank}</span>
-                <strong>{podiumLabel(rank)}</strong>
               </div>
-              {listing ? (
-                <>
-                  <div className="mini-brand">
-                    <span className="mini-logo">
-                      {logoFor(listing) ? <img src={logoFor(listing) ?? ''} alt="" /> : listing.name.slice(0, 2)}
-                    </span>
-                    <div>
-                      <h3>{listing.name}</h3>
-                      <p>{listing.category}</p>
-                    </div>
-                  </div>
-                  <p className="mini-headline">{listing.headline}</p>
-                  <div className="mini-bid">
-                    <strong>{money.format(listing.bid_amount)}</strong>
-                    <span>paid rank</span>
-                  </div>
-                  <div className="mini-stats">
-                    <span>{number.format(listing.clicks)} clicks</span>
-                    <ListingActions
-                      slug={listing.slug}
-                      name={listing.name}
-                      claimAmount={money.format(listing.bid_amount + 1)}
-                      variant="compact"
-                    />
-                  </div>
-                </>
-              ) : (
-                <div className="mini-empty">
-                  <strong>Open seat</strong>
-                  <span>Claim this category podium with the next paid bid.</span>
+              <div className="mini-brand">
+                <span className="mini-logo">
+                  {logoFor(listing) ? <img src={logoFor(listing) ?? ''} alt="" /> : listing.name.slice(0, 2)}
+                </span>
+                <div>
+                  <h3>{listing.name}</h3>
+                  <p>{listing.category}</p>
                 </div>
-              )}
+              </div>
+              <p className="mini-headline">{listing.headline}</p>
+              <div className="mini-bid">
+                <strong>{money.format(listing.bid_amount)}</strong>
+                <span>paid rank</span>
+              </div>
+              <div className="mini-stats">
+                <span>{number.format(listing.clicks)} clicks</span>
+                <ListingActions
+                  slug={listing.slug}
+                  name={listing.name}
+                  claimAmount={money.format(listing.bid_amount + 1)}
+                  variant="compact"
+                />
+              </div>
             </article>
           );
-        })}
+        }) : (
+          <article className="category-podium-card empty-category">
+            <div className="mini-rank">
+              <span>#1</span>
+            </div>
+            <div className="mini-empty">
+              <strong>No seats in this category yet.</strong>
+              <span>The first paid entrant here becomes the category leader.</span>
+            </div>
+          </article>
+        )}
       </div>
     </section>
   );

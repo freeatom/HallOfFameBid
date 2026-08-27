@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 
 const icons: Record<string, LucideIcon> = {
+  Overall: Trophy,
   'AI Agents & Infrastructure': Bot,
   'SEO & AI Visibility': SearchCheck,
   'Marketing & Advertising': Megaphone,
@@ -69,16 +70,29 @@ const icons: Record<string, LucideIcon> = {
 export function CategorySelect({
   categories,
   initialCategory,
+  name = 'category',
+  value,
+  onChange,
 }: {
   categories: string[];
   initialCategory?: string;
+  name?: string;
+  value?: string;
+  onChange?: (category: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(
+  const [internalSelected, setInternalSelected] = useState(
     initialCategory && categories.includes(initialCategory) ? initialCategory : categories[0],
   );
+  const selected = value && categories.includes(value) ? value : internalSelected;
   const ref = useRef<HTMLDivElement>(null);
   const SelectedIcon = icons[selected] ?? Shapes;
+
+  function choose(category: string) {
+    setInternalSelected(category);
+    onChange?.(category);
+    setOpen(false);
+  }
 
   useEffect(() => {
     function onPointerDown(event: PointerEvent) {
@@ -91,7 +105,7 @@ export function CategorySelect({
 
   return (
     <div className="category-select" ref={ref}>
-      <input type="hidden" name="category" value={selected} />
+      <input type="hidden" name={name} value={selected} />
       <button
         type="button"
         className="category-trigger"
@@ -115,10 +129,7 @@ export function CategorySelect({
                 aria-selected={active}
                 className={active ? 'category-option active' : 'category-option'}
                 key={category}
-                onClick={() => {
-                  setSelected(category);
-                  setOpen(false);
-                }}
+                onClick={() => choose(category)}
               >
                 <Icon aria-hidden="true" />
                 <span>{category}</span>

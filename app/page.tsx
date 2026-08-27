@@ -105,38 +105,11 @@ function OpenSeat({ rank, title, metal, copy, claimAmount }: (typeof emptySeats)
   );
 }
 
-function RankRow({ listing, rank }: { listing: Listing; rank: number }) {
-  const claimAmount = formatMoney(listing.bid_amount + 1);
-  return (
-    <article className="rank-row">
-      <div className="rank-number">#{rank}</div>
-      <Logo listing={listing} size="small" />
-      <div className="rank-copy">
-        <div>
-          <h3>{listing.name}</h3>
-          <span>{listing.category}</span>
-        </div>
-        <p>{listing.headline}</p>
-      </div>
-      <div className="rank-stat">
-        <strong>{formatMoney(listing.bid_amount)}</strong>
-        <span>paid rank</span>
-      </div>
-      <div className="rank-stat">
-        <strong>{formatNumber(listing.clicks)}</strong>
-        <span>tracked clicks</span>
-      </div>
-      <ListingActions slug={listing.slug} name={listing.name} claimAmount={claimAmount} variant="compact" />
-    </article>
-  );
-}
-
 export default async function Home() {
   const db = env.DB;
   const listings = db ? await getListings(db) : [];
   const stats = db ? await getStats(db) : { online: 0, visitors: 0, clicks: 0 };
   const topThree = listings.slice(0, 3);
-  const rest = listings.slice(3);
   const claimTop = getClaimAmount(listings);
   const topSeats = emptySeats.map((seat, index) => ({ seat, listing: topThree[index] }));
 
@@ -175,25 +148,6 @@ export default async function Home() {
         <PodiumExplorer listings={listings} categories={categories} />
       </section>
 
-      <section className="leaderboard-section" id="leaderboard">
-        <div className="section-head">
-          <div>
-            <p>Remaining ranks</p>
-            <h2>Rest of the Hall</h2>
-          </div>
-          <a href="#bid">Buy above them</a>
-        </div>
-        <div className="rank-list">
-          {rest.length ? (
-            rest.map((listing, index) => <RankRow key={listing.id} listing={listing} rank={index + 4} />)
-          ) : (
-            <div className="empty-board">
-              <strong>No lower seats yet.</strong>
-              <span>Once the podium fills, every paid entrant appears here in exact bid order.</span>
-            </div>
-          )}
-        </div>
-      </section>
       <Footer />
     </main>
   );
