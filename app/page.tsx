@@ -54,8 +54,6 @@ function getCategoryRank(listing: Listing, listings: Listing[]) {
 }
 
 function ShowcaseCard({ listing, rank, categoryRank }: { listing: Listing; rank: number; categoryRank: number }) {
-  const detailsId = `podium-details-${listing.slug}`;
-
   return (
     <article className={`showcase-card rank-${rank}`}>
       <a className="card-click-layer" href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer" aria-label={`Visit ${listing.name}`} />
@@ -77,15 +75,9 @@ function ShowcaseCard({ listing, rank, categoryRank }: { listing: Listing; rank:
           #{categoryRank} in {listing.category}
         </span>
         <strong>{formatNumber(listing.clicks)} clicks</strong>
-        <a className="details-link" href={`#${detailsId}`}>
+        <a className="details-link" href={`/listing/${listing.slug}`} target="_blank" rel="noreferrer">
           see details
         </a>
-      </div>
-      <div className="listing-details" id={detailsId}>
-        <span>{formatMoney(listing.bid_amount)} paid placement</span>
-        <span>#{rank} overall</span>
-        <span>#{categoryRank} in {listing.category}</span>
-        <span>{formatNumber(listing.clicks)} tracked clicks</span>
       </div>
     </article>
   );

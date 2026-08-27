@@ -56,7 +56,6 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
           const rank = index + 1;
           const overallRank = listings.findIndex((entry) => entry.id === listing.id) + 1;
           const displayedRank = view === 'Overall' ? overallRank : rank;
-          const detailsId = `ranking-details-${listing.slug}`;
           return (
             <article
               className={`category-podium-card rank-${displayedRank}`}
@@ -78,15 +77,9 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
                   <span>#{rank} in {listing.category}</span>
                   {view === 'Overall' ? null : <span>#{overallRank} overall</span>}
                   <strong>{number.format(listing.clicks)} clicks</strong>
-                  <a className="details-link" href={`#${detailsId}`}>
+                  <a className="details-link" href={`/listing/${listing.slug}`} target="_blank" rel="noreferrer">
                     see details
                   </a>
-                </div>
-                <div className="listing-details mini-details" id={detailsId}>
-                  <span>{money.format(listing.bid_amount)} paid placement</span>
-                  <span>#{overallRank} overall</span>
-                  <span>#{rank} in {listing.category}</span>
-                  <span>{number.format(listing.clicks)} tracked clicks</span>
                 </div>
               </div>
               <div className="mini-bid">
