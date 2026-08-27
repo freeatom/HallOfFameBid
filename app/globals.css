@@ -1232,9 +1232,7 @@ a.showcase-card {
   border: 0;
   border-top: 1px solid rgba(241, 217, 154, 0.11);
   border-radius: 0;
-  background:
-    linear-gradient(90deg, rgba(24, 20, 17, 0.38), rgba(8, 7, 6, 0.02)),
-    var(--onyx);
+  background: transparent;
   padding: 18px;
   box-shadow: none;
   cursor: pointer;
