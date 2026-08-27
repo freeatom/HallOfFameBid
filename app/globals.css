@@ -360,7 +360,9 @@ a:focus-visible {
 
 .amount-field {
   display: inline-flex;
-  width: clamp(110px, 12vw, 172px);
+  width: auto;
+  min-width: 0;
+  max-width: min(56vw, 360px);
   height: clamp(44px, 5vw, 60px);
   align-items: center;
   justify-content: center;
@@ -379,9 +381,9 @@ a:focus-visible {
 }
 
 .bid-composer .amount-field input {
-  width: 100%;
   height: auto;
   min-width: 0;
+  max-width: min(44vw, 300px);
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -392,6 +394,7 @@ a:focus-visible {
   line-height: 1;
   text-align: left;
   text-shadow: inherit;
+  overflow: visible;
 }
 
 .bid-composer .amount-field input:hover,
@@ -1186,6 +1189,14 @@ a:focus-visible {
 
 .view-select .category-menu {
   z-index: 140;
+  max-height: 246px;
+  overflow-y: auto;
+  border-color: rgba(241, 217, 154, 0.24);
+  background:
+    linear-gradient(180deg, #17110c, #090706),
+    var(--onyx);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.72);
+  backdrop-filter: none;
 }
 
 .category-podium-grid {
@@ -1577,10 +1588,10 @@ a:focus-visible {
   align-items: end;
   justify-content: space-between;
   gap: 22px;
-  max-width: 1440px;
+  max-width: min(920px, calc(100vw - 48px));
   margin: 20px auto 0;
   border-top: 1px solid rgba(241, 217, 154, 0.12);
-  padding: 24px clamp(14px, 3vw, 48px) 30px;
+  padding: 24px 0 30px;
 }
 
 .footer-brand {
@@ -1911,7 +1922,11 @@ a:focus-visible {
   }
 
   .amount-field {
-    width: 104px;
+    max-width: 76vw;
+  }
+
+  .bid-composer .amount-field input {
+    max-width: 62vw;
   }
 
   .claim-head p {
@@ -2087,6 +2102,12 @@ a:focus-visible {
   .site-footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .site-footer {
+    max-width: none;
+    margin-right: 14px;
+    margin-left: 14px;
   }
 
   .site-footer nav {

@@ -93,7 +93,14 @@ const temporaryDemoListings = [
   },
 ];
 
-async function seedTemporaryDemoData(db: D1Database) {
+export async function seedTemporaryDemoData(db: D1Database, force = false) {
+  if (force) {
+    await db.batch([
+      db.prepare("DELETE FROM clicks WHERE listing_id LIKE 'demo-%'"),
+      db.prepare("DELETE FROM listings WHERE id LIKE 'demo-%'"),
+    ]);
+  }
+
   const realCount = await db
     .prepare("SELECT COUNT(*) AS total FROM listings WHERE id NOT LIKE 'demo-%'")
     .first<{ total: number }>();
@@ -101,7 +108,7 @@ async function seedTemporaryDemoData(db: D1Database) {
     .prepare("SELECT COUNT(*) AS total FROM listings WHERE id LIKE 'demo-%'")
     .first<{ total: number }>();
 
-  if ((realCount?.total ?? 0) > 0 || (demoCount?.total ?? 0) > 0) return;
+  if (!force && ((realCount?.total ?? 0) > 0 || (demoCount?.total ?? 0) > 0)) return;
 
   const now = Date.now();
   const statements = temporaryDemoListings.flatMap((listing, listingIndex) => {
@@ -133,12 +140,11 @@ async function seedTemporaryDemoData(db: D1Database) {
     for (let clickIndex = 0; clickIndex < listing.clicks; clickIndex += 1) {
       inserts.push(
         db
-          .prepare('INSERT INTO clicks (id, listing_id, visitor_id, referrer, created_at) VALUES (?, ?, ?, ?, ?)')
+          .prepare('INSERT INTO clicks (id, listing_id, visitor_id, clicked_at) VALUES (?, ?, ?, ?)')
           .bind(
             `${listing.id}-click-${clickIndex}`,
             listing.id,
             `demo-visitor-${listingIndex}-${clickIndex}`,
-            'demo',
             createdAt + clickIndex * 1000,
           ),
       );

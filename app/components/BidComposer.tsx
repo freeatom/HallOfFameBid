@@ -158,6 +158,8 @@ export function BidComposer({
               name="amountDisplay"
               onChange={(event) => updateAmountInput(event.target.value)}
               pattern="[0-9]*"
+              size={Math.max(1, String(amount).length)}
+              style={{ width: `${Math.max(1, String(amount).length)}ch` }}
               type="text"
               value={String(amount)}
             />
