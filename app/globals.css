@@ -3147,9 +3147,10 @@ a:focus-visible {
   .stats-pill {
     justify-content: center;
     flex-wrap: wrap;
-    width: 100%;
+    width: fit-content;
+    max-width: calc(100vw - 28px);
     border-radius: 22px;
-    padding: 6px 9px;
+    padding: 7px 14px;
   }
 
   .stats-pill span,
@@ -3168,6 +3169,10 @@ a:focus-visible {
     max-width: 100%;
     min-height: 44px;
     text-align: center;
+  }
+
+  .topbar > .nav-claim {
+    display: none;
   }
 
   .claim-stage {
@@ -3226,6 +3231,12 @@ a:focus-visible {
   .category-trigger,
   .primary-action {
     height: 44px;
+  }
+
+  .compact-composer .primary-action {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: min(360px, 100%);
   }
 
   .rank-calculator {
@@ -3527,7 +3538,7 @@ a:focus-visible {
   }
 
   .showcase-card {
-    padding: 18px;
+    padding: 70px 18px 22px;
   }
 
   .showcase-topline {
@@ -3537,13 +3548,98 @@ a:focus-visible {
   }
 
   .showcase-brand {
-    align-items: flex-start;
+    align-items: center;
   }
 
   .showcase-brand h2,
   .showcase-headline,
   .showcase-copy {
     overflow-wrap: anywhere;
+  }
+
+  .category-podium-grid {
+    gap: 8px;
+  }
+
+  .category-podium-card,
+  .category-podium-card.rank-1,
+  .category-podium-card.rank-2,
+  .category-podium-card.rank-3 {
+    grid-template-columns: 38px 52px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    border-radius: 18px;
+    padding: 12px 66px 12px 10px;
+  }
+
+  .mini-rank {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    justify-items: center;
+  }
+
+  .mini-rank span,
+  .category-podium-card.rank-1 .mini-rank span,
+  .category-podium-card.rank-2 .mini-rank span,
+  .category-podium-card.rank-3 .mini-rank span {
+    min-width: 34px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .mini-brand {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .mini-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+  }
+
+  .mini-copy {
+    grid-column: 3;
+    min-width: 0;
+  }
+
+  .mini-copy h3 {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.18;
+    text-overflow: unset;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .mini-copy p {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.28;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .mini-meta {
+    gap: 3px 7px;
+    margin-top: 6px;
+    font-size: 10px;
+  }
+
+  .mini-bid {
+    position: absolute;
+    top: 13px;
+    right: 14px;
+    padding-right: 0;
+    text-align: right;
+  }
+
+  .mini-bid strong {
+    font-size: 13px;
   }
 
   .section-head {
