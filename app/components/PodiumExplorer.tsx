@@ -1,5 +1,6 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { useMemo, useState } from 'react';
 import { CategorySelect } from './CategorySelect';
 
@@ -92,6 +93,7 @@ export function PodiumExplorer({
             <article
               className={`category-podium-card rank-${displayedRank}`}
               key={listing.id}
+              style={{ '--row-index': index } as CSSProperties}
             >
               <a className="card-click-layer" href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer" aria-label={`Visit ${listing.name}`} />
               <div className="mini-rank">

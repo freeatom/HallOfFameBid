@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Globe2 } from 'lucide-react';
+import { Crown, Globe2, Sparkles, TrendingUp } from 'lucide-react';
 import { CategorySelect } from './CategorySelect';
 
 type RankSnapshot = {
@@ -64,6 +64,10 @@ export function BidComposer({
 
   const projectedRank = useMemo(() => rankFor(amount, listings), [amount, listings]);
   const overtake = useMemo(() => nextOvertake(amount, listings), [amount, listings]);
+  const topThreeEntry = useMemo(() => {
+    const third = [...listings].sort((a, b) => b.bid_amount - a.bid_amount)[2];
+    return third ? third.bid_amount + 1 : 1;
+  }, [listings]);
   const rankLine = `New spots start at $1. Paying less than the #1 price still puts you on the board at whatever place that bid can take.`;
 
   function updateAmount(value: number) {
@@ -175,6 +179,22 @@ export function BidComposer({
           </button>
         </div>
         <p>{rankLine}</p>
+        {mode === 'compact' ? (
+          <div className="bid-pressure" aria-label="Bid position preview">
+            <span>
+              <Crown aria-hidden="true" />
+              Projected #{projectedRank}
+            </span>
+            <span>
+              <TrendingUp aria-hidden="true" />
+              Top 3 from {money.format(topThreeEntry)}
+            </span>
+            <span>
+              <Sparkles aria-hidden="true" />
+              {overtake ? `${money.format(overtake.amount)} beats ${overtake.name}` : 'Crown-ready'}
+            </span>
+          </div>
+        ) : null}
       </div>
 
       <div className="instant-row">

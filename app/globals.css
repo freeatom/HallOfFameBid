@@ -118,6 +118,22 @@ a:focus-visible {
   background-size: 82px 82px, 82px 82px, 100% 100%;
   mask-image: linear-gradient(180deg, #000 0, #000 66%, transparent 100%);
   pointer-events: none;
+  animation: hallGridAwake 1200ms ease both;
+}
+
+.hero-stage::after {
+  content: '';
+  position: absolute;
+  inset: 38% -18% auto;
+  z-index: 0;
+  height: 190px;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(241, 217, 154, 0.08) 46%, rgba(184, 117, 69, 0.06) 56%, transparent 76%),
+    radial-gradient(circle at 50% 50%, rgba(216, 170, 83, 0.16), transparent 54%);
+  opacity: 0.52;
+  pointer-events: none;
+  transform: translateX(-72%);
+  animation: hallFloorSweep 8.8s ease-in-out 1.2s infinite;
 }
 
 .topbar,
@@ -150,6 +166,7 @@ a:focus-visible {
   gap: 16px;
   max-width: 1440px;
   margin: 0 auto;
+  animation: hallElementIn 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .brand-cluster {
@@ -370,6 +387,7 @@ a:focus-visible {
   max-width: min(920px, calc(100vw - 48px));
   margin: clamp(22px, 5vh, 54px) auto clamp(36px, 5.5vh, 64px);
   text-align: center;
+  animation: hallElementIn 780ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
 }
 
 .claim-stage > p,
@@ -518,6 +536,45 @@ a:focus-visible {
 .compact-composer .claim-head p {
   max-width: 590px;
   font-size: 13px;
+}
+
+.bid-pressure {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 13px auto 0;
+}
+
+.bid-pressure span {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(241, 217, 154, 0.14);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(29, 24, 20, 0.78), rgba(9, 8, 7, 0.62));
+  color: #d9c99e;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 820;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  animation: pressureChipIn 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.bid-pressure span:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.bid-pressure span:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.bid-pressure svg {
+  width: 15px;
+  height: 15px;
+  color: var(--gold);
 }
 
 .instant-row {
@@ -888,6 +945,7 @@ a:focus-visible {
   max-width: 1440px;
   margin: 0 auto;
   min-width: 0;
+  perspective: 1200px;
 }
 
 .showcase-card {
@@ -959,7 +1017,9 @@ a:focus-visible {
     linear-gradient(160deg, rgba(60, 43, 21, 0.86), rgba(10, 8, 7, 0.97)),
     var(--onyx);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 34px 100px rgba(216, 170, 83, 0.18);
-  animation: crownSeatEntrance 920ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation:
+    crownSeatEntrance 920ms cubic-bezier(0.16, 1, 0.3, 1) both,
+    crownSeatPulse 5.6s ease-in-out 1s infinite;
 }
 
 .showcase-card.rank-1::after {
@@ -1094,6 +1154,7 @@ a:focus-visible {
 
 .brand-mark {
   display: grid;
+  position: relative;
   flex: 0 0 auto;
   place-items: center;
   overflow: hidden;
@@ -1287,6 +1348,17 @@ a:focus-visible {
   animation: medallionGlow 4.8s ease-in-out infinite;
 }
 
+.showcase-card.rank-1 .brand-mark-large::after {
+  content: '';
+  position: absolute;
+  inset: -18px;
+  border: 1px solid rgba(241, 217, 154, 0.24);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  animation: crownLogoAura 3.8s ease-in-out infinite;
+}
+
 .empty-seat h2 {
   margin: 12px 0 0;
   color: var(--ink);
@@ -1402,6 +1474,8 @@ a:focus-visible {
     box-shadow 190ms ease,
     transform 190ms ease,
     background 190ms ease;
+  animation: rankingRowReveal 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(min(var(--row-index, 0), 8) * 58ms);
 }
 
 .category-podium-card:hover {
@@ -2158,6 +2232,66 @@ a:focus-visible {
   }
 }
 
+@keyframes hallGridAwake {
+  from {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hallFloorSweep {
+  0%,
+  38% {
+    transform: translateX(-72%);
+    opacity: 0;
+  }
+  54% {
+    opacity: 0.52;
+  }
+  78%,
+  100% {
+    transform: translateX(72%);
+    opacity: 0;
+  }
+}
+
+@keyframes hallElementIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pressureChipIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes rankingRowReveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes crownSheen {
   0%,
   58% {
@@ -2166,6 +2300,16 @@ a:focus-visible {
   78%,
   100% {
     transform: translateX(125%);
+  }
+}
+
+@keyframes crownSeatPulse {
+  0%,
+  100% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 34px 100px rgba(216, 170, 83, 0.18);
+  }
+  50% {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 38px 118px rgba(216, 170, 83, 0.27);
   }
 }
 
@@ -2187,6 +2331,18 @@ a:focus-visible {
   }
 }
 
+@keyframes crownLogoAura {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.78);
+  }
+  42% {
+    opacity: 0.42;
+    transform: scale(1);
+  }
+}
+
 @keyframes medallionGlow {
   0%,
   100% {
@@ -2194,6 +2350,17 @@ a:focus-visible {
   }
   50% {
     box-shadow: inset 0 0 0 7px rgba(216, 170, 83, 0.13), 0 0 36px rgba(216, 170, 83, 0.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
   }
 }
 
