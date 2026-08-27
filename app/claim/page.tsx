@@ -2,20 +2,10 @@ import { env } from 'cloudflare:workers';
 import Link from 'next/link';
 import { BidComposer } from '../components/BidComposer';
 import { StatsPulse } from '../components/StatsPulse';
+import { categories } from '../categories';
 import { getClaimAmount, getListings, getStats } from '@/db/hall';
 
 export const dynamic = 'force-dynamic';
-
-const categories = [
-  'AI Agents & Infrastructure',
-  'Business, Finance & Legal',
-  'Luxury & Private Access',
-  'Agencies, Studios & Services',
-  'Developer Tools',
-  'Directories, Launch & Discovery',
-  'Creator Tools',
-  'Other',
-];
 
 export default async function ClaimPage({
   searchParams,

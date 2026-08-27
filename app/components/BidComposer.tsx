@@ -1,6 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Globe2 } from 'lucide-react';
+import { CategorySelect } from './CategorySelect';
 
 type RankSnapshot = {
   name: string;
@@ -63,11 +65,7 @@ export function BidComposer({
   const projectedRank = useMemo(() => rankFor(amount, listings), [amount, listings]);
   const overtake = useMemo(() => nextOvertake(amount, listings), [amount, listings]);
   const formatted = useMemo(() => money.format(amount), [amount]);
-  const claimTop = listings[0] ? listings[0].bid_amount + 1 : 1;
-  const rankLine =
-    projectedRank === 1
-      ? `${formatted} claims the Crown Seat right now.`
-      : `${formatted} places you at #${projectedRank}; ${money.format(claimTop)} takes #1.`;
+  const rankLine = `New spots start at $1. Paying less than the #1 price still puts you on the board at whatever place that bid can take.`;
 
   function updateField(key: keyof typeof fields, value: string) {
     setFields((current) => ({ ...current, [key]: value }));
@@ -136,7 +134,7 @@ export function BidComposer({
   return (
     <form action={submit} className={mode === 'compact' ? 'bid-composer compact-composer' : 'bid-composer'} id="bid">
       <div className="claim-head">
-        <span className="claim-label">{mode === 'compact' ? 'Private Patron Entry' : 'Finalise Your Hall Seat'}</span>
+        {mode === 'checkout' ? <span className="claim-label">Finalise Your Hall Seat</span> : null}
         <div className="claim-title">
           <span>Claim #{projectedRank}</span>
           <button type="button" onClick={() => setAmount((value) => Math.max(1, value - 1))} aria-label="Decrease bid">
@@ -151,19 +149,18 @@ export function BidComposer({
       </div>
 
       <div className="instant-row">
-        <input
-          name="url"
-          placeholder="Your website URL or @handle"
-          value={fields.url}
-          onBlur={resolveBrand}
-          onChange={(event) => updateField('url', event.target.value)}
-          required
-        />
-        <select name="category" defaultValue={initialCategory && categories.includes(initialCategory) ? initialCategory : categories[0]}>
-          {categories.map((category) => (
-            <option key={category}>{category}</option>
-          ))}
-        </select>
+        <label className="url-field">
+          <Globe2 aria-hidden="true" />
+          <input
+            name="url"
+            placeholder="Your website URL or @handle"
+            value={fields.url}
+            onBlur={resolveBrand}
+            onChange={(event) => updateField('url', event.target.value)}
+            required
+          />
+        </label>
+        <CategorySelect categories={categories} initialCategory={initialCategory} />
         <button className="primary-action" type="submit">
           Claim
         </button>

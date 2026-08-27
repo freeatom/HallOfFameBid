@@ -2,20 +2,10 @@ import { env } from 'cloudflare:workers';
 import { BidComposer } from './components/BidComposer';
 import { ListingActions } from './components/ListingActions';
 import { StatsPulse } from './components/StatsPulse';
+import { categories } from './categories';
 import { formatMoney, formatNumber, getClaimAmount, getListings, getStats, type Listing } from '@/db/hall';
 
 export const dynamic = 'force-dynamic';
-
-const categories = [
-  'AI Agents & Infrastructure',
-  'Business, Finance & Legal',
-  'Luxury & Private Access',
-  'Agencies, Studios & Services',
-  'Developer Tools',
-  'Directories, Launch & Discovery',
-  'Creator Tools',
-  'Other',
-];
 
 const emptySeats = [
   {
@@ -64,7 +54,7 @@ function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
     <article className={`showcase-card rank-${rank}`}>
       <div className="showcase-topline">
         <span>{rank === 1 ? 'GOLD' : rank === 2 ? 'PLATINUM' : 'BRONZE'}</span>
-        <strong>#{rank}</strong>
+        <strong>{rank === 1 ? 'I' : rank === 2 ? 'II' : 'III'}</strong>
       </div>
       <div className="bid-corner">{formatMoney(listing.bid_amount)}</div>
       <div className="showcase-brand">
@@ -100,7 +90,7 @@ function OpenSeat({ rank, title, metal, copy, claimAmount }: (typeof emptySeats)
     <article className={`showcase-card rank-${rank} empty-seat`}>
       <div className="showcase-topline">
         <span>{metal}</span>
-        <strong>#{rank}</strong>
+        <strong>{rank === 1 ? 'I' : rank === 2 ? 'II' : 'III'}</strong>
       </div>
       <div className="bid-corner">{claimAmount}</div>
       <div className="empty-medallion">{rank}</div>
@@ -161,12 +151,12 @@ export default async function Home() {
           </a>
           <StatsPulse initial={stats} />
           <a className="nav-claim" href="#bid">
-            Claim #1 for {formatMoney(claimTop)}
+            Claim #1
           </a>
         </header>
 
         <div className="claim-stage">
-          <p>Private internet patronage</p>
+          <p>Welcome to the Hall of Fame</p>
           <h1>Own the first impression.</h1>
           <BidComposer minimumBid={claimTop} categories={categories} listings={listings} mode="compact" />
         </div>

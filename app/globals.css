@@ -291,8 +291,12 @@ a:focus-visible {
 .compact-composer {
   max-width: 1060px;
   margin: 0 auto;
-  padding: 11px;
-  border-radius: 24px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  backdrop-filter: none;
 }
 
 .claim-head {
@@ -368,7 +372,6 @@ a:focus-visible {
 }
 
 .bid-composer input,
-.bid-composer select,
 .bid-composer textarea {
   width: 100%;
   border: 1px solid rgba(241, 217, 154, 0.16);
@@ -379,36 +382,136 @@ a:focus-visible {
 }
 
 .bid-composer input,
-.bid-composer select {
+.category-trigger {
   height: 52px;
+}
+
+.bid-composer input {
   padding: 0 17px;
 }
 
-.bid-composer select {
-  appearance: none;
+.url-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.url-field svg {
+  position: absolute;
+  left: 18px;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  color: var(--champagne);
+  opacity: 0.72;
+}
+
+.url-field input {
+  padding-left: 48px;
+}
+
+.category-select {
+  position: relative;
+  min-width: 0;
+}
+
+.category-trigger {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(241, 217, 154, 0.16);
+  border-radius: 18px;
   background:
-    linear-gradient(45deg, transparent 50%, var(--champagne) 50%) calc(100% - 20px) 50% / 7px 7px no-repeat,
-    linear-gradient(135deg, var(--champagne) 50%, transparent 50%) calc(100% - 15px) 50% / 7px 7px no-repeat,
     linear-gradient(180deg, rgba(29, 24, 20, 0.92), rgba(8, 7, 6, 0.78));
-  padding-right: 42px;
+  color: #fff7e8;
+  padding: 0 14px;
   font-weight: 760;
+  text-align: left;
+}
+
+.category-trigger svg {
+  width: 17px;
+  height: 17px;
+  color: var(--champagne);
+  opacity: 0.76;
+}
+
+.category-trigger span {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-trigger svg:last-child {
+  flex: 0 0 auto;
+  opacity: 0.9;
+}
+
+.category-menu {
+  position: absolute;
+  inset: calc(100% + 8px) 0 auto 0;
+  z-index: 20;
+  max-height: 288px;
+  overflow-y: auto;
+  border: 1px solid rgba(241, 217, 154, 0.22);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(29, 24, 20, 0.98), rgba(7, 6, 5, 0.98)),
+    var(--onyx);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.52);
+  padding: 7px;
+}
+
+.category-option {
+  display: flex;
+  width: 100%;
+  min-height: 38px;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  padding: 0 9px;
+  text-align: left;
+}
+
+.category-option:hover,
+.category-option.active {
+  background: rgba(241, 217, 154, 0.09);
+  color: #fff2cf;
+}
+
+.category-option svg {
+  width: 16px;
+  height: 16px;
+  color: var(--champagne);
+  opacity: 0.72;
+}
+
+.category-option span {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 720;
 }
 
 .bid-composer input:hover,
-.bid-composer select:hover {
+.category-trigger:hover {
   border-color: rgba(241, 217, 154, 0.3);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 28px rgba(0, 0, 0, 0.22);
 }
 
 .bid-composer input:focus,
-.bid-composer select:focus,
 .bid-composer textarea:focus {
   border-color: rgba(241, 217, 154, 0.48);
   background-color: rgba(12, 10, 8, 0.86);
 }
 
 .compact-composer input,
-.compact-composer select,
+.compact-composer .category-trigger,
 .compact-composer .primary-action {
   height: 46px;
 }
@@ -418,11 +521,6 @@ a:focus-visible {
   margin-top: 10px;
   padding: 14px 17px;
   resize: vertical;
-}
-
-.bid-composer select option {
-  background: #14110e;
-  color: #fff7e8;
 }
 
 .bid-composer ::placeholder {
@@ -600,7 +698,7 @@ a:focus-visible {
     linear-gradient(158deg, rgba(29, 24, 20, 0.9), rgba(9, 8, 7, 0.96)),
     var(--smoke);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 28px 70px rgba(0, 0, 0, 0.34);
-  padding: 16px;
+  padding: 18px;
   animation: riseIn 640ms ease both;
 }
 
@@ -661,9 +759,11 @@ a:focus-visible {
 }
 
 .showcase-topline {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 8px;
+  max-width: calc(100% - 118px);
   color: var(--gold);
   font-size: 10px;
   font-weight: 900;
@@ -674,30 +774,39 @@ a:focus-visible {
 .showcase-topline strong {
   color: #fff2c9;
   font-family: var(--font-display), Georgia, serif;
-  font-size: 32px;
+  font-size: 18px;
   line-height: 1;
 }
 
 .bid-corner {
   position: absolute;
-  top: 44px;
-  right: 16px;
+  top: 16px;
+  right: 18px;
   z-index: 2;
+  display: inline-flex;
+  min-width: 70px;
+  max-width: 132px;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(241, 217, 154, 0.2);
   border-radius: 999px;
   background: rgba(7, 6, 5, 0.56);
   color: var(--champagne);
-  padding: 7px 11px;
-  font-size: 12px;
+  padding: 0 12px;
+  font-size: clamp(11px, 1vw, 13px);
   font-weight: 900;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .showcase-brand {
   display: flex;
   align-items: center;
   gap: 13px;
-  margin-top: 12px;
+  margin-top: 18px;
 }
 
 .brand-mark {
@@ -1257,7 +1366,7 @@ a:focus-visible {
   }
 
   .bid-composer input,
-  .bid-composer select,
+  .category-trigger,
   .primary-action {
     height: 44px;
   }
