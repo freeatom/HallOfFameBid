@@ -1,6 +1,7 @@
 import { env } from 'cloudflare:workers';
 import Link from 'next/link';
 import { BidComposer } from '../components/BidComposer';
+import { Footer } from '../components/Footer';
 import { StatsPulse } from '../components/StatsPulse';
 import { categories } from '../categories';
 import { getClaimAmount, getListings, getStats } from '@/db/hall';
@@ -50,6 +51,7 @@ export default async function ClaimPage({
           initialCategory={params.category}
         />
       </section>
+      <Footer />
     </main>
   );
 }

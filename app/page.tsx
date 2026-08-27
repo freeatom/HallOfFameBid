@@ -2,6 +2,7 @@ import { env } from 'cloudflare:workers';
 import { BidComposer } from './components/BidComposer';
 import { ListingActions } from './components/ListingActions';
 import { StatsPulse } from './components/StatsPulse';
+import { Footer } from './components/Footer';
 import { categories } from './categories';
 import { formatMoney, formatNumber, getClaimAmount, getListings, getStats, type Listing } from '@/db/hall';
 
@@ -191,6 +192,7 @@ export default async function Home() {
           )}
         </div>
       </section>
+      <Footer />
     </main>
   );
 }

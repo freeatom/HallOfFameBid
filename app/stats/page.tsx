@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers';
 import Link from 'next/link';
+import { Footer } from '../components/Footer';
 import { StatsPulse } from '../components/StatsPulse';
 import { formatMoney, formatNumber, getClaimAmount, getListings, getStats } from '@/db/hall';
 
@@ -83,6 +84,7 @@ export default async function StatsPage() {
           )}
         </div>
       </section>
+      <Footer />
     </main>
   );
 }
