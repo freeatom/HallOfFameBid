@@ -14,6 +14,7 @@ type Listing = {
   bid_amount: number;
   logo_key: string | null;
   logo_url: string | null;
+  created_at: number;
   clicks: number;
 };
 
@@ -34,6 +35,17 @@ function logoFor(listing: Listing) {
 
 function getCategoryRank(listing: Listing, listings: Listing[]) {
   return listings.filter((entry) => entry.category === listing.category && entry.bid_amount >= listing.bid_amount).length;
+}
+
+function formatRelativeAge(timestamp: number) {
+  const elapsed = Math.max(0, Date.now() - timestamp);
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (elapsed < hour) return `${Math.max(1, Math.floor(elapsed / minute))} min ago`;
+  if (elapsed < day) return `${Math.floor(elapsed / hour)} hrs ago`;
+  return `${Math.floor(elapsed / day)} days ago`;
 }
 
 export function PodiumExplorer({
@@ -98,6 +110,7 @@ export function PodiumExplorer({
                   {view === 'Overall' ? null : <span>#{periodOverallRank} overall {periodLabel}</span>}
                   {period === 'today' && allTimeOverallRank > 0 ? <span>#{allTimeOverallRank} all-time</span> : null}
                   <strong>{number.format(listing.clicks)} clicks</strong>
+                  <span>{formatRelativeAge(listing.created_at)}</span>
                   <a className="details-link" href={`/listing/${listing.slug}`} target="_blank" rel="noreferrer">
                     see details
                   </a>

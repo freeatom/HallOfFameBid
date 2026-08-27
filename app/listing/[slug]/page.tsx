@@ -45,6 +45,17 @@ function getHost(value: string) {
   }
 }
 
+function formatRelativeAge(timestamp: number) {
+  const elapsed = Math.max(0, Date.now() - timestamp);
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (elapsed < hour) return `${Math.max(1, Math.floor(elapsed / minute))} min ago`;
+  if (elapsed < day) return `${Math.floor(elapsed / hour)} hrs ago`;
+  return `${Math.floor(elapsed / day)} days ago`;
+}
+
 export default async function ListingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const db = env.DB;
@@ -85,6 +96,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
               <div className="detail-meta">
                 <span>#{categoryRank} in {listing.category}</span>
                 <span>{formatNumber(listing.clicks)} clicks</span>
+                <span>{formatRelativeAge(listing.created_at)}</span>
                 <span>{getHost(listing.url)}</span>
               </div>
             </div>

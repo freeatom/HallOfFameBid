@@ -165,7 +165,7 @@ export function BidComposer({
               onChange={(event) => updateAmountInput(event.target.value)}
               pattern="[0-9]*"
               size={Math.max(1, String(amount).length)}
-              style={{ width: `${Math.max(1, String(amount).length)}ch` }}
+              style={{ width: `${Math.max(0.72, String(amount).length * 0.64)}em` }}
               type="text"
               value={String(amount)}
             />

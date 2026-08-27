@@ -462,20 +462,24 @@ a:focus-visible {
 .amount-field span {
   font-size: inherit;
   font-weight: 900;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
 .bid-composer .amount-field input {
   flex: 0 0 auto;
   height: auto;
+  width: auto;
   min-width: 0;
   max-width: min(44vw, 300px);
+  box-sizing: content-box;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: var(--champagne);
   padding: 0;
   font-size: inherit;
+  font-variant-numeric: tabular-nums;
   font-weight: 900;
   line-height: 1;
   text-align: left;
