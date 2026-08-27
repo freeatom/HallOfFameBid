@@ -49,22 +49,16 @@ function Logo({ listing, size = 'large' }: { listing: Listing; size?: 'large' | 
   );
 }
 
-function compactHost(value: string) {
-  try {
-    const url = new URL(value);
-    return url.hostname.replace(/^www\./, '');
-  } catch {
-    return value.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
-  }
-}
-
 function getCategoryRank(listing: Listing, listings: Listing[]) {
   return listings.filter((entry) => entry.category === listing.category && entry.bid_amount >= listing.bid_amount).length;
 }
 
 function ShowcaseCard({ listing, rank, categoryRank }: { listing: Listing; rank: number; categoryRank: number }) {
+  const detailsId = `podium-details-${listing.slug}`;
+
   return (
-    <a className={`showcase-card rank-${rank}`} href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer">
+    <article className={`showcase-card rank-${rank}`}>
+      <a className="card-click-layer" href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer" aria-label={`Visit ${listing.name}`} />
       <div className="podium-rank-badge">#{rank}</div>
       <div className="showcase-topline">
         <span>{rank === 1 ? 'GOLD' : rank === 2 ? 'PLATINUM' : 'BRONZE'}</span>
@@ -82,13 +76,18 @@ function ShowcaseCard({ listing, rank, categoryRank }: { listing: Listing; rank:
         <span>
           #{categoryRank} in {listing.category}
         </span>
-        <span>
-          {compactHost(listing.url)}
-        </span>
         <strong>{formatNumber(listing.clicks)} clicks</strong>
-        <span>see details</span>
+        <a className="details-link" href={`#${detailsId}`}>
+          see details
+        </a>
       </div>
-    </a>
+      <div className="listing-details" id={detailsId}>
+        <span>{formatMoney(listing.bid_amount)} paid placement</span>
+        <span>#{rank} overall</span>
+        <span>#{categoryRank} in {listing.category}</span>
+        <span>{formatNumber(listing.clicks)} tracked clicks</span>
+      </div>
+    </article>
   );
 }
 

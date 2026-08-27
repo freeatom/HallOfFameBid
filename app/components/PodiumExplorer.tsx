@@ -30,15 +30,6 @@ function logoFor(listing: Listing) {
   return listing.logo_url;
 }
 
-function compactHost(value: string) {
-  try {
-    const url = new URL(value);
-    return url.hostname.replace(/^www\./, '');
-  } catch {
-    return value.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
-  }
-}
-
 export function PodiumExplorer({ listings, categories }: { listings: Listing[]; categories: string[] }) {
   const [view, setView] = useState('Overall');
   const viewOptions = useMemo(() => ['Overall', ...categories], [categories]);
@@ -65,14 +56,13 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
           const rank = index + 1;
           const overallRank = listings.findIndex((entry) => entry.id === listing.id) + 1;
           const displayedRank = view === 'Overall' ? overallRank : rank;
+          const detailsId = `ranking-details-${listing.slug}`;
           return (
-            <a
+            <article
               className={`category-podium-card rank-${displayedRank}`}
-              href={`/visit/${listing.slug}`}
               key={listing.id}
-              target="_blank"
-              rel="noreferrer"
             >
+              <a className="card-click-layer" href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer" aria-label={`Visit ${listing.name}`} />
               <div className="mini-rank">
                 <span>#{displayedRank}</span>
               </div>
@@ -87,15 +77,22 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
                 <div className="mini-meta">
                   <span>#{rank} in {listing.category}</span>
                   {view === 'Overall' ? null : <span>#{overallRank} overall</span>}
-                  <span>{compactHost(listing.url)}</span>
                   <strong>{number.format(listing.clicks)} clicks</strong>
-                  <span>see details</span>
+                  <a className="details-link" href={`#${detailsId}`}>
+                    see details
+                  </a>
+                </div>
+                <div className="listing-details mini-details" id={detailsId}>
+                  <span>{money.format(listing.bid_amount)} paid placement</span>
+                  <span>#{overallRank} overall</span>
+                  <span>#{rank} in {listing.category}</span>
+                  <span>{number.format(listing.clicks)} tracked clicks</span>
                 </div>
               </div>
               <div className="mini-bid">
                 <strong>{money.format(listing.bid_amount)}</strong>
               </div>
-            </a>
+            </article>
           );
         }) : (
           <article className="category-podium-card empty-category">
