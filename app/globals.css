@@ -3102,18 +3102,46 @@ a:focus-visible {
 }
 
 @media (max-width: 760px) {
+  body {
+    zoom: 1;
+  }
+
   .hero-stage {
     min-height: auto;
-    padding: 12px 14px 22px;
+    padding: 14px 14px 26px;
+  }
+
+  .topbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
   }
 
   .signature {
-    justify-self: start;
+    justify-self: center;
+    justify-content: center;
   }
 
   .brand-cluster {
-    justify-self: stretch;
+    justify-content: center;
     flex-wrap: wrap;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .brand-cluster .period-toggle {
+    order: 2;
+  }
+
+  .signature strong {
+    font-size: 17px;
+  }
+
+  .sigil {
+    width: 42px;
+    height: 42px;
+    font-size: 24px;
   }
 
   .stats-pill {
@@ -3136,7 +3164,9 @@ a:focus-visible {
   }
 
   .nav-claim {
+    width: min(220px, 100%);
     max-width: 100%;
+    min-height: 44px;
     text-align: center;
   }
 
@@ -3233,9 +3263,104 @@ a:focus-visible {
   .podium-grid {
     grid-template-columns: 1fr;
     align-items: stretch;
-    gap: 10px;
+    gap: 14px;
     overflow: visible;
     padding-bottom: 0;
+  }
+
+  .showcase-card,
+  .showcase-card.rank-1,
+  .showcase-card.rank-2,
+  .showcase-card.rank-3 {
+    display: flex;
+    min-height: auto;
+    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 70px 18px 22px;
+    text-align: center;
+    transform: none;
+  }
+
+  .showcase-card:hover,
+  .showcase-card.rank-1:hover,
+  .showcase-card.rank-2:hover,
+  .showcase-card.rank-3:hover {
+    transform: translateY(-2px);
+  }
+
+  .showcase-card.rank-1 {
+    order: 1;
+  }
+
+  .showcase-card.rank-2 {
+    order: 2;
+  }
+
+  .showcase-card.rank-3 {
+    order: 3;
+  }
+
+  .showcase-topline {
+    top: 22px;
+    left: 50%;
+    max-width: calc(100% - 160px);
+    transform: translateX(-50%);
+  }
+
+  .podium-rank-badge {
+    top: 16px;
+    left: 16px;
+  }
+
+  .bid-corner {
+    top: 16px;
+    right: 16px;
+    max-width: 116px;
+  }
+
+  .showcase-brand {
+    width: 100%;
+    align-items: center;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  .brand-mark,
+  .brand-mark-large,
+  .rank-1 .brand-mark-large {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .brand-mark-large {
+    width: 88px;
+    height: 88px;
+    border-radius: 27px;
+  }
+
+  .rank-1 .brand-mark-large {
+    width: 112px;
+    height: 112px;
+    border-radius: 34px;
+  }
+
+  .showcase-brand h2,
+  .showcase-headline,
+  .showcase-copy {
+    text-align: center;
+  }
+
+  .showcase-card.rank-2 .showcase-headline,
+  .showcase-card.rank-3 .showcase-headline,
+  .showcase-headline,
+  .showcase-copy {
+    max-width: min(360px, 100%);
+  }
+
+  .showcase-meta {
+    justify-content: center;
+    width: 100%;
   }
 
   .podium-explorer {

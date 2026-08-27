@@ -66,7 +66,7 @@ function HallFrame({
   const categoryLine =
     category === 'Overall'
       ? `#${categoryRank} in ${listing.category}`
-      : `#${overallRank} overall ${period === 'today' ? 'today' : 'all-time'}`;
+      : `#${displayedRank} in ${listing.category}`;
 
   return (
     <article className={`hall-wall-frame rank-${displayedRank}`} style={{ '--frame-index': index } as CSSProperties}>
@@ -88,6 +88,7 @@ function HallFrame({
         <span>{formatMoney(listing.bid_amount)}</span>
         <small>{formatNumber(listing.clicks)} clicks</small>
         <small>{formatRelativeAge(listing.created_at)}</small>
+        {category === 'Overall' ? null : <small>#{overallRank} overall {period === 'today' ? 'today' : 'all-time'}</small>}
         <Link className="details-link" href={`/listing/${listing.slug}`} target="_blank" rel="noreferrer">
           see details <ExternalLink aria-hidden="true" />
         </Link>
