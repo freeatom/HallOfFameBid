@@ -1235,7 +1235,7 @@ a.showcase-card {
   background:
     linear-gradient(90deg, rgba(24, 20, 17, 0.38), rgba(8, 7, 6, 0.02)),
     var(--onyx);
-  padding: 16px 0;
+  padding: 18px;
   box-shadow: none;
   cursor: pointer;
 }
