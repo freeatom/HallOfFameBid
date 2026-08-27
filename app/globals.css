@@ -1225,7 +1225,7 @@ a.showcase-card {
 .category-podium-card {
   position: relative;
   display: grid;
-  grid-template-columns: 50px 68px minmax(0, 1fr) 120px;
+  grid-template-columns: 50px 68px minmax(0, 1fr) 150px;
   align-items: center;
   gap: 16px;
   overflow: hidden;
@@ -1375,6 +1375,7 @@ a.showcase-card {
 .mini-bid {
   display: block;
   min-width: 0;
+  padding-right: 24px;
   text-align: right;
 }
 
@@ -1859,7 +1860,7 @@ a.showcase-card {
   }
 
   .category-podium-card {
-    grid-template-columns: 58px 68px minmax(0, 1fr) 112px;
+    grid-template-columns: 58px 68px minmax(0, 1fr) 136px;
   }
 
   .category-podium-card .mini-copy {
