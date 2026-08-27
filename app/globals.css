@@ -235,6 +235,14 @@ a:focus-visible {
 .stats-link {
   color: #fff2d0;
   font-weight: 700;
+  transition:
+    color 160ms ease,
+    text-shadow 160ms ease;
+}
+
+.stats-link:hover {
+  color: #fff;
+  text-shadow: 0 0 18px rgba(241, 217, 154, 0.42);
 }
 
 .nav-claim,
@@ -276,6 +284,13 @@ a:focus-visible {
 .copy-action:hover,
 .logo-uploader button:hover {
   transform: translateY(-2px);
+  box-shadow: 0 18px 46px rgba(216, 170, 83, 0.28);
+}
+
+.claim-title button:hover {
+  border-color: rgba(241, 217, 154, 0.44);
+  background: rgba(216, 170, 83, 0.18);
+  color: #fff;
 }
 
 .claim-stage {
@@ -504,6 +519,10 @@ a:focus-visible {
   padding: 0 14px;
   font-weight: 760;
   text-align: left;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease;
 }
 
 .category-trigger svg {
@@ -595,6 +614,10 @@ a:focus-visible {
 .category-trigger:hover {
   border-color: rgba(241, 217, 154, 0.3);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+
+.category-trigger:hover {
+  color: #fff;
 }
 
 .bid-composer input:focus,
@@ -800,10 +823,33 @@ a:focus-visible {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 28px 70px rgba(0, 0, 0, 0.34);
   padding: 18px;
   animation: riseIn 640ms ease both;
+  transition:
+    border-color 190ms ease,
+    box-shadow 190ms ease,
+    transform 190ms ease,
+    filter 190ms ease;
 }
 
 a.showcase-card {
   cursor: pointer;
+}
+
+a.showcase-card:hover {
+  border-color: rgba(241, 217, 154, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 34px 84px rgba(216, 170, 83, 0.16);
+  filter: brightness(1.04);
+}
+
+a.showcase-card.rank-1:hover {
+  transform: translateY(-16px) scale(1.006);
+}
+
+a.showcase-card.rank-2:hover {
+  transform: translateY(14px) scale(1.006);
+}
+
+a.showcase-card.rank-3:hover {
+  transform: translateY(24px) scale(1.006);
 }
 
 .showcase-card::before {
@@ -978,16 +1024,16 @@ a.showcase-card {
 }
 
 .brand-mark-large {
-  width: 66px;
-  height: 66px;
-  border-radius: 21px;
+  width: 74px;
+  height: 74px;
+  border-radius: 23px;
   font-size: 19px;
 }
 
 .rank-1 .brand-mark-large {
-  width: 82px;
-  height: 82px;
-  border-radius: 25px;
+  width: 92px;
+  height: 92px;
+  border-radius: 28px;
 }
 
 .brand-mark-small {
@@ -1236,6 +1282,21 @@ a.showcase-card {
   padding: 18px;
   box-shadow: none;
   cursor: pointer;
+  transition:
+    border-color 190ms ease,
+    box-shadow 190ms ease,
+    transform 190ms ease,
+    background 190ms ease;
+}
+
+.category-podium-card:hover {
+  border-color: rgba(241, 217, 154, 0.3);
+  transform: translateX(4px);
+  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.24);
+}
+
+.category-podium-card:not(.rank-1, .rank-2, .rank-3):hover {
+  background: rgba(241, 217, 154, 0.035);
 }
 
 .category-podium-card.rank-1 {
@@ -1630,10 +1691,14 @@ a.showcase-card {
   color: var(--muted);
   font-size: 13px;
   font-weight: 750;
+  transition:
+    color 160ms ease,
+    text-shadow 160ms ease;
 }
 
 .site-footer nav a:hover {
-  color: var(--champagne);
+  color: #fff;
+  text-shadow: 0 0 16px rgba(241, 217, 154, 0.3);
 }
 
 .stats-empty {
