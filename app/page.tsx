@@ -158,7 +158,6 @@ export default async function Home() {
 
         <div className="claim-stage">
           <p>Welcome to the Hall of Fame</p>
-          <h1>Own the first impression.</h1>
           <BidComposer minimumBid={claimTop} categories={categories} listings={listings} mode="compact" />
         </div>
 

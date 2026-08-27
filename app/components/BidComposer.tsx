@@ -64,8 +64,17 @@ export function BidComposer({
 
   const projectedRank = useMemo(() => rankFor(amount, listings), [amount, listings]);
   const overtake = useMemo(() => nextOvertake(amount, listings), [amount, listings]);
-  const formatted = useMemo(() => money.format(amount), [amount]);
   const rankLine = `New spots start at $1. Paying less than the #1 price still puts you on the board at whatever place that bid can take.`;
+
+  function updateAmount(value: number) {
+    if (!Number.isFinite(value)) return;
+    setAmount(Math.max(1, Math.floor(value)));
+  }
+
+  function updateAmountInput(value: string) {
+    const numeric = Number(value.replace(/[^0-9]/g, ''));
+    updateAmount(numeric || 1);
+  }
 
   function updateField(key: keyof typeof fields, value: string) {
     setFields((current) => ({ ...current, [key]: value }));
@@ -136,12 +145,24 @@ export function BidComposer({
       <div className="claim-head">
         {mode === 'checkout' ? <span className="claim-label">Finalise Your Hall Seat</span> : null}
         <div className="claim-title">
-          <span>Claim #{projectedRank}</span>
+          <span>Claim #{projectedRank} for</span>
           <button type="button" onClick={() => setAmount((value) => Math.max(1, value - 1))} aria-label="Decrease bid">
             -
           </button>
-          <strong>{formatted}</strong>
-          <button type="button" onClick={() => setAmount((value) => value + 1)} aria-label="Increase bid">
+          <label className="amount-field">
+            <span>$</span>
+            <input
+              aria-label="Bid amount in dollars"
+              inputMode="numeric"
+              min="1"
+              name="amountDisplay"
+              onChange={(event) => updateAmountInput(event.target.value)}
+              pattern="[0-9]*"
+              type="text"
+              value={String(amount)}
+            />
+          </label>
+          <button type="button" onClick={() => updateAmount(amount + 1)} aria-label="Increase bid">
             +
           </button>
         </div>
