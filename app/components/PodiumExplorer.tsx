@@ -52,7 +52,7 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
           <h2>{view}</h2>
         </div>
         <label className="view-select">
-          <span>Podium view</span>
+          <span>Category</span>
           <select value={view} onChange={(event) => setView(event.target.value)}>
             <option value="Overall">Overall</option>
             {categories.map((category) => (
@@ -86,8 +86,11 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
                       <p>{listing.category}</p>
                     </div>
                   </div>
-                  <strong className="mini-bid">{money.format(listing.bid_amount)}</strong>
                   <p className="mini-headline">{listing.headline}</p>
+                  <div className="mini-bid">
+                    <strong>{money.format(listing.bid_amount)}</strong>
+                    <span>paid rank</span>
+                  </div>
                   <div className="mini-stats">
                     <span>{number.format(listing.clicks)} clicks</span>
                     <ListingActions
