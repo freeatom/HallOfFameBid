@@ -1069,6 +1069,13 @@ a.showcase-card.rank-3:hover {
   text-align: center;
 }
 
+.showcase-card.rank-2 .showcase-headline,
+.showcase-card.rank-3 .showcase-headline {
+  max-width: 320px;
+  font-size: clamp(14px, 1.05vw, 17px);
+  line-height: 1.22;
+}
+
 .showcase-copy {
   min-height: 48px;
   margin: 8px auto 0;
