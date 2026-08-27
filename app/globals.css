@@ -42,6 +42,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+  zoom: 0.85;
 }
 
 ::-webkit-scrollbar {
