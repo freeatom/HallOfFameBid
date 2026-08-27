@@ -58,7 +58,11 @@ function compactHost(value: string) {
   }
 }
 
-function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
+function getCategoryRank(listing: Listing, listings: Listing[]) {
+  return listings.filter((entry) => entry.category === listing.category && entry.bid_amount >= listing.bid_amount).length;
+}
+
+function ShowcaseCard({ listing, rank, categoryRank }: { listing: Listing; rank: number; categoryRank: number }) {
   return (
     <a className={`showcase-card rank-${rank}`} href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer">
       <div className="podium-rank-badge">#{rank}</div>
@@ -69,7 +73,6 @@ function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
       <div className="showcase-brand">
         <Logo listing={listing} />
         <div>
-          <p>{listing.category}</p>
           <h2>{listing.name}</h2>
         </div>
       </div>
@@ -77,7 +80,7 @@ function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
       <p className="showcase-copy">{listing.description}</p>
       <div className="showcase-meta">
         <span>
-          #{rank} in {listing.category}
+          #{categoryRank} in {listing.category}
         </span>
         <span>
           {compactHost(listing.url)}
@@ -139,7 +142,12 @@ export default async function Home() {
         <div className="podium-grid" aria-label="Top three Hall of Fame listings">
           {topSeats.map(({ seat, listing }) =>
             listing ? (
-              <ShowcaseCard key={listing.id} listing={listing} rank={seat.rank} />
+              <ShowcaseCard
+                key={listing.id}
+                listing={listing}
+                rank={seat.rank}
+                categoryRank={getCategoryRank(listing, listings)}
+              />
             ) : (
               <OpenSeat key={seat.rank} {...seat} claimAmount={formatMoney(seat.rank === 1 ? claimTop : 1)} />
             ),

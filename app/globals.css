@@ -340,7 +340,7 @@ a:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 7px;
   margin-top: 10px;
   color: #fffaf0;
   font-size: clamp(30px, 4.1vw, 50px);
@@ -355,13 +355,14 @@ a:focus-visible {
 
 .amount-field {
   display: inline-flex;
+  flex: 0 0 auto;
   width: auto;
   min-width: 0;
   max-width: min(56vw, 360px);
   height: clamp(44px, 5vw, 60px);
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -376,6 +377,7 @@ a:focus-visible {
 }
 
 .bid-composer .amount-field input {
+  flex: 0 0 auto;
   height: auto;
   min-width: 0;
   max-width: min(44vw, 300px);
@@ -947,9 +949,12 @@ a.showcase-card {
 
 .showcase-brand {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 13px;
-  margin-top: 52px;
+  justify-content: center;
+  gap: 11px;
+  margin-top: 56px;
+  text-align: center;
 }
 
 .brand-mark {
@@ -978,6 +983,12 @@ a.showcase-card {
   font-size: 19px;
 }
 
+.rank-1 .brand-mark-large {
+  width: 82px;
+  height: 82px;
+  border-radius: 25px;
+}
+
 .brand-mark-small {
   width: 46px;
   height: 46px;
@@ -1002,25 +1013,30 @@ a.showcase-card {
 }
 
 .showcase-headline {
-  margin: 15px 0 0;
+  margin: 16px auto 0;
+  max-width: 390px;
   color: #fff2d2;
   font-size: clamp(16px, 1.35vw, 21px);
   font-weight: 760;
   line-height: 1.25;
+  text-align: center;
 }
 
 .showcase-copy {
   min-height: 48px;
-  margin: 8px 0 0;
+  margin: 8px auto 0;
+  max-width: 390px;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.5;
+  text-align: center;
 }
 
 .showcase-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 5px 9px;
   margin-top: 13px;
   color: #8f836f;

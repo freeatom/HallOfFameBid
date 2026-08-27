@@ -63,16 +63,18 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
       <div className="category-podium-grid">
         {visibleListings.length ? visibleListings.map((listing, index) => {
           const rank = index + 1;
+          const overallRank = listings.findIndex((entry) => entry.id === listing.id) + 1;
+          const displayedRank = view === 'Overall' ? overallRank : rank;
           return (
             <a
-              className={`category-podium-card rank-${rank}`}
+              className={`category-podium-card rank-${displayedRank}`}
               href={`/visit/${listing.slug}`}
               key={listing.id}
               target="_blank"
               rel="noreferrer"
             >
               <div className="mini-rank">
-                <span>#{rank}</span>
+                <span>#{displayedRank}</span>
               </div>
               <div className="mini-brand">
                 <span className="mini-logo">
@@ -84,6 +86,7 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
                 <p>{listing.description}</p>
                 <div className="mini-meta">
                   <span>#{rank} in {listing.category}</span>
+                  {view === 'Overall' ? null : <span>#{overallRank} overall</span>}
                   <span>{compactHost(listing.url)}</span>
                   <strong>{number.format(listing.clicks)} clicks</strong>
                   <span>see details</span>
