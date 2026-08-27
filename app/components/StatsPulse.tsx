@@ -56,8 +56,11 @@ export function StatsPulse({ initial }: { initial: Stats }) {
         <strong>{formatter.format(stats.visitors)}</strong> visitors since launch
       </span>
       <span>
-        <strong>{formatter.format(stats.clicks)}</strong> verified clicks
+        <strong>{formatter.format(stats.clicks)}</strong> tracked clicks
       </span>
+      <a className="stats-link" href="/stats">
+        see stats -&gt;
+      </a>
     </div>
   );
 }

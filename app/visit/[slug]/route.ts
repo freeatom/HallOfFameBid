@@ -15,9 +15,17 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
   const visitorCookie = request.headers.get('cookie')?.match(/hof_visitor=([^;]+)/)?.[1];
   const visitorId = visitorCookie ? decodeURIComponent(visitorCookie).slice(0, 80) : crypto.randomUUID();
 
-  await env.DB.prepare('INSERT INTO clicks (id, listing_id, visitor_id, clicked_at) VALUES (?, ?, ?, ?)')
-    .bind(crypto.randomUUID(), listing.id, visitorId, Date.now())
-    .run();
+  const recent = await env.DB.prepare(
+    'SELECT id FROM clicks WHERE listing_id = ? AND visitor_id = ? AND clicked_at > ? LIMIT 1',
+  )
+    .bind(listing.id, visitorId, Date.now() - 30 * 60 * 1000)
+    .first<{ id: string }>();
+
+  if (!recent) {
+    await env.DB.prepare('INSERT INTO clicks (id, listing_id, visitor_id, clicked_at) VALUES (?, ?, ?, ?)')
+      .bind(crypto.randomUUID(), listing.id, visitorId, Date.now())
+      .run();
+  }
 
   const response = new Response(null, {
     status: 302,

@@ -1,4 +1,4 @@
-import { schemaStatements, seedListings } from './schema';
+import { schemaStatements } from './schema';
 
 export type Listing = {
   id: string;
@@ -21,6 +21,13 @@ export type RuntimeEnv = {
   LOGOS?: R2Bucket;
 };
 
+export type PendingListing = Omit<Listing, 'clicks' | 'updated_at'> & {
+  status: 'pending' | 'paid' | 'failed';
+  checkout_session_id: string | null;
+  payment_id: string | null;
+  paid_at: number | null;
+};
+
 let initialized = false;
 
 export async function ensureDatabase(db: D1Database) {
@@ -30,63 +37,15 @@ export async function ensureDatabase(db: D1Database) {
     await db.prepare(statement).run();
   }
 
-  const now = Date.now();
-  const seedInserts: D1PreparedStatement[] = [];
-
-  for (const [index, listing] of seedListings.entries()) {
-    const existing = await db.prepare('SELECT id FROM listings WHERE id = ?').bind(listing.id).first<{ id: string }>();
-    if (!existing) {
-      seedInserts.push(
-        db.prepare(
-          `INSERT INTO listings (
-              id, slug, name, url, category, headline, description, bid_amount,
-              logo_key, logo_url, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        )
-          .bind(
-            listing.id,
-            listing.slug,
-            listing.name,
-            listing.url,
-            listing.category,
-            listing.headline,
-            listing.description,
-            listing.bid_amount,
-            null,
-            listing.logo_url,
-            now - index * 86_400_000,
-            now - index * 86_400_000,
-          ),
-      );
-    }
-  }
-
-  if (seedInserts.length) {
-    await db.batch(seedInserts);
-  }
-
-  const seededClick = await db
-    .prepare("SELECT id FROM clicks WHERE id LIKE 'aurelian-labs-seed-%' LIMIT 1")
-    .first<{ id: string }>();
-
-  if (!seededClick) {
-    const clickRows = seedListings.flatMap((listing, listingIndex) => {
-      const totals = [36944, 22618, 17902, 12440, 9875, 6301];
-      const total = totals[listingIndex] ?? 1000;
-      const samples = Math.min(total, 48);
-      return Array.from({ length: samples }, (_, index) =>
-        db
-          .prepare('INSERT INTO clicks (id, listing_id, visitor_id, clicked_at) VALUES (?, ?, ?, ?)')
-          .bind(
-            `${listing.id}-seed-${index}`,
-            listing.id,
-            `seed-visitor-${listingIndex}-${index}`,
-            now - index * 3_600_000,
-          ),
-      );
-    });
-    await db.batch(clickRows);
-  }
+  const oldSeedIds = ['aurelian-labs', 'vaultsignal', 'maison-atlas', 'northstar-gtm', 'prismkit', 'crownindex'];
+  await db.batch([
+    db
+      .prepare(`DELETE FROM clicks WHERE listing_id IN (${oldSeedIds.map(() => '?').join(',')})`)
+      .bind(...oldSeedIds),
+    db
+      .prepare(`DELETE FROM listings WHERE id IN (${oldSeedIds.map(() => '?').join(',')})`)
+      .bind(...oldSeedIds),
+  ]);
 
   initialized = true;
 }
@@ -109,6 +68,21 @@ export async function getListings(db: D1Database) {
   return result.results ?? [];
 }
 
+export async function getPlacementForBid(db: D1Database, amount: number) {
+  await ensureDatabase(db);
+  const result = await db
+    .prepare('SELECT COUNT(*) AS total FROM listings WHERE bid_amount >= ?')
+    .bind(amount)
+    .first<{ total: number }>();
+
+  return (result?.total ?? 0) + 1;
+}
+
+export function getClaimAmount(listings: Pick<Listing, 'bid_amount'>[]) {
+  const highest = listings[0]?.bid_amount ?? 0;
+  return Math.max(1, highest + 1);
+}
+
 export async function getStats(db: D1Database) {
   await ensureDatabase(db);
   const now = Date.now();
@@ -120,10 +94,54 @@ export async function getStats(db: D1Database) {
   ]);
 
   return {
-    online: Math.max(214, onlineCount?.total ?? 0),
-    visitors: Math.max(1_027_462, visitorCount?.total ?? 0),
-    clicks: Math.max(128_264, clickCount?.total ?? 0),
+    online: onlineCount?.total ?? 0,
+    visitors: visitorCount?.total ?? 0,
+    clicks: clickCount?.total ?? 0,
   };
+}
+
+export async function getPendingListing(db: D1Database, id: string) {
+  await ensureDatabase(db);
+  return db
+    .prepare('SELECT * FROM checkout_intents WHERE id = ? LIMIT 1')
+    .bind(id)
+    .first<PendingListing>();
+}
+
+export async function publishPaidListing(db: D1Database, intent: PendingListing, paymentId: string) {
+  await ensureDatabase(db);
+  const now = Date.now();
+  await db.batch([
+    db
+      .prepare(
+        `INSERT INTO listings (
+          id, slug, name, url, category, headline, description, bid_amount,
+          logo_key, logo_url, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          bid_amount = excluded.bid_amount,
+          logo_key = excluded.logo_key,
+          logo_url = excluded.logo_url,
+          updated_at = excluded.updated_at`,
+      )
+      .bind(
+        intent.id,
+        intent.slug,
+        intent.name,
+        intent.url,
+        intent.category,
+        intent.headline,
+        intent.description,
+        intent.bid_amount,
+        intent.logo_key,
+        intent.logo_url,
+        intent.created_at,
+        now,
+      ),
+    db
+      .prepare('UPDATE checkout_intents SET status = ?, payment_id = ?, paid_at = ? WHERE id = ?')
+      .bind('paid', paymentId, now, intent.id),
+  ]);
 }
 
 export function formatMoney(value: number) {
@@ -141,9 +159,27 @@ export function formatNumber(value: number) {
 export function normalizeUrl(raw: string) {
   const trimmed = raw.trim();
   if (!trimmed) return '';
-  if (trimmed.startsWith('@')) return `https://x.com/${trimmed.slice(1)}`;
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
+  if (trimmed.startsWith('@')) return `https://x.com/${trimmed.slice(1).replace(/^@+/, '')}`;
+  const looksLikeUrl =
+    /^https?:\/\//i.test(trimmed) ||
+    /^www\./i.test(trimmed) ||
+    trimmed.includes('.') ||
+    trimmed.includes('/');
+  const withProtocol = looksLikeUrl ? (/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`) : `https://x.com/${trimmed.replace(/^@+/, '')}`;
+  try {
+    const url = new URL(withProtocol);
+    if (url.hostname === 'twitter.com' || url.hostname === 'www.twitter.com') {
+      url.hostname = 'x.com';
+      return url.toString();
+    }
+    if (url.hostname === 'www.x.com') {
+      url.hostname = 'x.com';
+      return url.toString();
+    }
+    return url.toString();
+  } catch {
+    return withProtocol;
+  }
 }
 
 export function isAllowedListingUrl(value: string) {
@@ -152,6 +188,30 @@ export function isAllowedListingUrl(value: string) {
     return url.hostname === 'x.com' || url.hostname.includes('.');
   } catch {
     return false;
+  }
+}
+
+export function logoUrlForInput(value: string) {
+  if (!value) return null;
+  try {
+    const url = new URL(normalizeUrl(value));
+    if (url.hostname === 'x.com') {
+      const handle = url.pathname.split('/').filter(Boolean)[0];
+      return handle ? `https://unavatar.io/x/${encodeURIComponent(handle)}` : null;
+    }
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url.hostname)}&sz=128`;
+  } catch {
+    return null;
+  }
+}
+
+export function getTwitterHandle(value: string) {
+  try {
+    const url = new URL(normalizeUrl(value));
+    if (url.hostname !== 'x.com') return '';
+    return url.pathname.split('/').filter(Boolean)[0]?.replace(/^@+/, '') ?? '';
+  } catch {
+    return '';
   }
 }
 

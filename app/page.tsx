@@ -2,7 +2,7 @@ import { env } from 'cloudflare:workers';
 import { BidComposer } from './components/BidComposer';
 import { ListingActions } from './components/ListingActions';
 import { StatsPulse } from './components/StatsPulse';
-import { formatMoney, formatNumber, getListings, getStats, type Listing } from '@/db/hall';
+import { formatMoney, formatNumber, getClaimAmount, getListings, getStats, type Listing } from '@/db/hall';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,9 +17,30 @@ const categories = [
   'Other',
 ];
 
+const emptySeats = [
+  {
+    rank: 1,
+    title: 'Crown Seat',
+    metal: 'GOLD',
+    copy: 'The first paid entrant becomes the opening face of the Hall.',
+  },
+  {
+    rank: 2,
+    title: 'Platinum Seat',
+    metal: 'PLATINUM',
+    copy: 'Second position keeps first-screen prestige with distinct ceremony.',
+  },
+  {
+    rank: 3,
+    title: 'Bronze Seat',
+    metal: 'BRONZE',
+    copy: 'Third position completes the founding podium.',
+  },
+];
+
 function logoFor(listing: Listing) {
   if (listing.logo_key) return `/logo/${listing.logo_key}`;
-  return null;
+  return listing.logo_url;
 }
 
 function Logo({ listing, size = 'large' }: { listing: Listing; size?: 'large' | 'small' }) {
@@ -38,14 +59,14 @@ function Logo({ listing, size = 'large' }: { listing: Listing; size?: 'large' | 
 }
 
 function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
-  const claimAmount = formatMoney(listing.bid_amount + (rank === 1 ? 5 : 1));
+  const claimAmount = formatMoney(listing.bid_amount + 1);
   return (
     <article className={`showcase-card rank-${rank}`}>
-      <div className="showcase-glow" />
       <div className="showcase-topline">
-        <span>{rank === 1 ? 'Crown seat' : rank === 2 ? 'Marble seat' : 'Onyx seat'}</span>
+        <span>{rank === 1 ? 'GOLD' : rank === 2 ? 'PLATINUM' : 'BRONZE'}</span>
         <strong>#{rank}</strong>
       </div>
+      <div className="bid-corner">{formatMoney(listing.bid_amount)}</div>
       <div className="showcase-brand">
         <Logo listing={listing} />
         <div>
@@ -58,18 +79,36 @@ function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
       <div className="showcase-metrics">
         <span>
           <strong>{formatMoney(listing.bid_amount)}</strong>
-          Spent
+          paid rank
         </span>
         <span>
-          <strong>{formatNumber(Math.max(listing.clicks, rank === 1 ? 36944 : rank === 2 ? 22618 : 17902))}</strong>
-          Clicks
+          <strong>{formatNumber(listing.clicks)}</strong>
+          tracked clicks
         </span>
         <span>
           <strong>#{rank}</strong>
-          Overall
+          overall
         </span>
       </div>
       <ListingActions slug={listing.slug} name={listing.name} claimAmount={claimAmount} />
+    </article>
+  );
+}
+
+function OpenSeat({ rank, title, metal, copy, claimAmount }: (typeof emptySeats)[number] & { claimAmount: string }) {
+  return (
+    <article className={`showcase-card rank-${rank} empty-seat`}>
+      <div className="showcase-topline">
+        <span>{metal}</span>
+        <strong>#{rank}</strong>
+      </div>
+      <div className="bid-corner">{claimAmount}</div>
+      <div className="empty-medallion">{rank}</div>
+      <h2>{title}</h2>
+      <p>{copy}</p>
+      <a className="outbid-action empty-claim" href="#bid">
+        Claim for {claimAmount}
+      </a>
     </article>
   );
 }
@@ -89,11 +128,11 @@ function RankRow({ listing, rank }: { listing: Listing; rank: number }) {
       </div>
       <div className="rank-stat">
         <strong>{formatMoney(listing.bid_amount)}</strong>
-        <span>Spent</span>
+        <span>paid rank</span>
       </div>
       <div className="rank-stat">
-        <strong>{formatNumber(Math.max(listing.clicks, 420 + rank * 311))}</strong>
-        <span>Clicks</span>
+        <strong>{formatNumber(listing.clicks)}</strong>
+        <span>tracked clicks</span>
       </div>
       <ListingActions slug={listing.slug} name={listing.name} claimAmount={claimAmount} variant="compact" />
     </article>
@@ -103,11 +142,11 @@ function RankRow({ listing, rank }: { listing: Listing; rank: number }) {
 export default async function Home() {
   const db = env.DB;
   const listings = db ? await getListings(db) : [];
-  const stats = db ? await getStats(db) : { online: 214, visitors: 1_027_462, clicks: 128_264 };
+  const stats = db ? await getStats(db) : { online: 0, visitors: 0, clicks: 0 };
   const topThree = listings.slice(0, 3);
   const rest = listings.slice(3);
-  const highestBid = topThree[0]?.bid_amount ?? 5;
-  const claimTop = highestBid + 5;
+  const claimTop = getClaimAmount(listings);
+  const topSeats = emptySeats.map((seat, index) => ({ seat, listing: topThree[index] }));
 
   return (
     <main className="site-shell">
@@ -126,65 +165,40 @@ export default async function Home() {
           </a>
         </header>
 
-        <div className="hero-intro">
-          <p>Leaderboard · Elite Placement Market</p>
-          <h1>The most expensive seats on the internet.</h1>
-          <span>
-            Top bidders get first-screen presence, public proof of spend, verified click counts, and
-            a shareable Hall of Fame profile.
-          </span>
+        <div className="claim-stage">
+          <p>Private internet patronage</p>
+          <h1>Own the first impression.</h1>
+          <BidComposer minimumBid={claimTop} categories={categories} listings={listings} mode="compact" />
         </div>
 
         <div className="podium-grid" aria-label="Top three Hall of Fame listings">
-          {topThree.map((listing, index) => (
-            <ShowcaseCard key={listing.id} listing={listing} rank={index + 1} />
-          ))}
+          {topSeats.map(({ seat, listing }) =>
+            listing ? (
+              <ShowcaseCard key={listing.id} listing={listing} rank={seat.rank} />
+            ) : (
+              <OpenSeat key={seat.rank} {...seat} claimAmount={formatMoney(seat.rank === 1 ? claimTop : 1)} />
+            ),
+          )}
         </div>
-      </section>
-
-      <section className="market-strip">
-        <div>
-          <strong>{formatMoney(highestBid)}</strong>
-          <span>Current highest bid</span>
-        </div>
-        <div>
-          <strong>{formatMoney(claimTop)}</strong>
-          <span>Minimum to take #1</span>
-        </div>
-        <div>
-          <strong>24h + all-time</strong>
-          <span>Dual leaderboard model</span>
-        </div>
-        <div>
-          <strong>Logo + click ledger</strong>
-          <span>Every entry gets trackable proof</span>
-        </div>
-      </section>
-
-      <section className="entry-section">
-        <div className="entry-copy">
-          <p>For bidders</p>
-          <h2>Buy rank with proof, not vague exposure.</h2>
-          <span>
-            Listings record visits through Hall of Fame redirect links, show deduped click totals,
-            store brand marks, and keep the leaderboard sorted by paid amount.
-          </span>
-        </div>
-        <BidComposer minimumBid={claimTop} categories={categories} />
       </section>
 
       <section className="leaderboard-section" id="leaderboard">
         <div className="section-head">
           <div>
-            <p>Beyond the podium</p>
-            <h2>The rest of the board</h2>
+            <p>Remaining ranks</p>
+            <h2>Rest of the Hall</h2>
           </div>
-          <a href="#bid">Enter above them</a>
+          <a href="#bid">Buy above them</a>
         </div>
         <div className="rank-list">
-          {rest.map((listing, index) => (
-            <RankRow key={listing.id} listing={listing} rank={index + 4} />
-          ))}
+          {rest.length ? (
+            rest.map((listing, index) => <RankRow key={listing.id} listing={listing} rank={index + 4} />)
+          ) : (
+            <div className="empty-board">
+              <strong>No lower seats yet.</strong>
+              <span>Once the podium fills, every paid entrant appears here in exact bid order.</span>
+            </div>
+          )}
         </div>
       </section>
     </main>
