@@ -1222,27 +1222,6 @@ a.showcase-card {
   position: relative;
 }
 
-.category-podium-grid::before,
-.category-podium-grid::after {
-  content: '';
-  position: absolute;
-  top: 270px;
-  bottom: 0;
-  z-index: 2;
-  width: clamp(28px, 8vw, 96px);
-  pointer-events: none;
-}
-
-.category-podium-grid::before {
-  left: -1px;
-  background: linear-gradient(90deg, rgba(8, 7, 6, 0.94), rgba(8, 7, 6, 0));
-}
-
-.category-podium-grid::after {
-  right: -1px;
-  background: linear-gradient(270deg, rgba(8, 7, 6, 0.94), rgba(8, 7, 6, 0));
-}
-
 .category-podium-card {
   position: relative;
   display: grid;
@@ -1259,7 +1238,6 @@ a.showcase-card {
   padding: 16px 0;
   box-shadow: none;
   cursor: pointer;
-  opacity: max(0.72, calc(1 - (var(--rank-index, 0) - 3) * 0.045));
 }
 
 .category-podium-card.rank-1 {

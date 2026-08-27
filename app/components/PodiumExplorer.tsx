@@ -1,6 +1,5 @@
 'use client';
 
-import type { CSSProperties } from 'react';
 import { useMemo, useState } from 'react';
 import { CategorySelect } from './CategorySelect';
 
@@ -71,7 +70,6 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
               className={`category-podium-card rank-${displayedRank}`}
               href={`/visit/${listing.slug}`}
               key={listing.id}
-              style={{ '--rank-index': index } as CSSProperties}
               target="_blank"
               rel="noreferrer"
             >
