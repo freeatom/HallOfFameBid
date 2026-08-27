@@ -1,6 +1,5 @@
 import { env } from 'cloudflare:workers';
 import { BidComposer } from './components/BidComposer';
-import { ListingActions } from './components/ListingActions';
 import { StatsPulse } from './components/StatsPulse';
 import { Footer } from './components/Footer';
 import { PodiumExplorer } from './components/PodiumExplorer';
@@ -50,10 +49,18 @@ function Logo({ listing, size = 'large' }: { listing: Listing; size?: 'large' | 
   );
 }
 
+function compactHost(value: string) {
+  try {
+    const url = new URL(value);
+    return url.hostname.replace(/^www\./, '');
+  } catch {
+    return value.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+  }
+}
+
 function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
-  const claimAmount = formatMoney(listing.bid_amount + 1);
   return (
-    <article className={`showcase-card rank-${rank}`}>
+    <a className={`showcase-card rank-${rank}`} href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer">
       <div className="podium-rank-badge">#{rank}</div>
       <div className="showcase-topline">
         <span>{rank === 1 ? 'GOLD' : rank === 2 ? 'PLATINUM' : 'BRONZE'}</span>
@@ -68,22 +75,17 @@ function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
       </div>
       <p className="showcase-headline">{listing.headline}</p>
       <p className="showcase-copy">{listing.description}</p>
-      <div className="showcase-metrics">
+      <div className="showcase-meta">
         <span>
-          <strong>{formatMoney(listing.bid_amount)}</strong>
-          paid rank
+          #{rank} in {listing.category}
         </span>
         <span>
-          <strong>{formatNumber(listing.clicks)}</strong>
-          tracked clicks
+          {compactHost(listing.url)}
         </span>
-        <span>
-          <strong>#{rank}</strong>
-          overall
-        </span>
+        <strong>{formatNumber(listing.clicks)} clicks</strong>
+        <span>see details</span>
       </div>
-      <ListingActions slug={listing.slug} name={listing.name} claimAmount={claimAmount} />
-    </article>
+    </a>
   );
 }
 
@@ -121,7 +123,6 @@ export default async function Home() {
             <span className="sigil">H</span>
             <span>
               <strong>Hall of Fame Bid</strong>
-              <small>halloffamebid.lol</small>
             </span>
           </a>
           <StatsPulse initial={stats} />
