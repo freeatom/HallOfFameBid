@@ -3,6 +3,7 @@ import { BidComposer } from './components/BidComposer';
 import { ListingActions } from './components/ListingActions';
 import { StatsPulse } from './components/StatsPulse';
 import { Footer } from './components/Footer';
+import { PodiumExplorer } from './components/PodiumExplorer';
 import { categories } from './categories';
 import { formatMoney, formatNumber, getClaimAmount, getListings, getStats, type Listing } from '@/db/hall';
 
@@ -53,9 +54,9 @@ function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
   const claimAmount = formatMoney(listing.bid_amount + 1);
   return (
     <article className={`showcase-card rank-${rank}`}>
+      <div className="podium-rank-badge">#{rank}</div>
       <div className="showcase-topline">
         <span>{rank === 1 ? 'GOLD' : rank === 2 ? 'PLATINUM' : 'BRONZE'}</span>
-        <strong>{rank === 1 ? 'I' : rank === 2 ? 'II' : 'III'}</strong>
       </div>
       <div className="bid-corner">{formatMoney(listing.bid_amount)}</div>
       <div className="showcase-brand">
@@ -89,9 +90,9 @@ function ShowcaseCard({ listing, rank }: { listing: Listing; rank: number }) {
 function OpenSeat({ rank, title, metal, copy, claimAmount }: (typeof emptySeats)[number] & { claimAmount: string }) {
   return (
     <article className={`showcase-card rank-${rank} empty-seat`}>
+      <div className="podium-rank-badge">#{rank}</div>
       <div className="showcase-topline">
         <span>{metal}</span>
-        <strong>{rank === 1 ? 'I' : rank === 2 ? 'II' : 'III'}</strong>
       </div>
       <div className="bid-corner">{claimAmount}</div>
       <div className="empty-medallion">{rank}</div>
@@ -170,6 +171,8 @@ export default async function Home() {
             ),
           )}
         </div>
+
+        <PodiumExplorer listings={listings} categories={categories} />
       </section>
 
       <section className="leaderboard-section" id="leaderboard">
