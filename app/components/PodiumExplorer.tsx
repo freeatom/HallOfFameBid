@@ -1,8 +1,9 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import Link from 'next/link';
+import { Landmark } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { LayoutList, Landmark } from 'lucide-react';
 import { CategorySelect } from './CategorySelect';
 
 type Listing = {
@@ -21,7 +22,6 @@ type Listing = {
 };
 
 type Period = 'all' | 'today';
-type ExplorerMode = 'rankings' | 'hall';
 
 const money = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -66,12 +66,12 @@ export function PodiumExplorer({
 }) {
   const viewOptions = useMemo(() => ['Overall', ...categories], [categories]);
   const [view, setView] = useState(initialView && viewOptions.includes(initialView) ? initialView : 'Overall');
-  const [mode, setMode] = useState<ExplorerMode>('rankings');
   const visibleListings = useMemo(() => {
     const filtered = view === 'Overall' ? listings : listings.filter((listing) => listing.category === view);
     return filtered;
   }, [listings, view]);
   const periodLabel = period === 'today' ? 'today' : 'all-time';
+  const hallHref = `/hall?period=${period}${view === 'Overall' ? '' : `&category=${encodeURIComponent(view)}`}`;
 
   return (
     <section className="podium-explorer" aria-label="Browse podium rankings">
@@ -84,122 +84,64 @@ export function PodiumExplorer({
           <span>Category</span>
           <CategorySelect categories={viewOptions} name="podiumCategory" value={view} onChange={setView} />
         </label>
-        <div className="hall-mode-switch" aria-label="Ranking display mode">
-          <button
-            type="button"
-            className={mode === 'rankings' ? 'active' : undefined}
-            onClick={() => setMode('rankings')}
-          >
-            <LayoutList aria-hidden="true" />
-            Rankings
-          </button>
-          <button
-            type="button"
-            className={mode === 'hall' ? 'active' : undefined}
-            onClick={() => setMode('hall')}
-          >
-            <Landmark aria-hidden="true" />
-            Hall View
-          </button>
-        </div>
+        <Link className="hall-view-link" href={hallHref}>
+          <Landmark aria-hidden="true" />
+          Hall View
+        </Link>
       </div>
 
-      {mode === 'hall' ? (
-        <div className="hall-gallery" aria-label={`${view} Hall View`}>
-          {visibleListings.length ? visibleListings.map((listing, index) => {
-            const categoryRank = getCategoryRank(listing, listings);
-            const periodOverallRank = listings.findIndex((entry) => entry.id === listing.id) + 1;
-            const displayedRank = view === 'Overall' ? periodOverallRank : index + 1;
-            return (
-              <article
-                className={`hall-plaque rank-${displayedRank}`}
-                key={listing.id}
-                style={{ '--row-index': index } as CSSProperties}
-              >
-                <a className="card-click-layer" href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer" aria-label={`Visit ${listing.name}`} />
-                <div className="hall-plaque-rank">#{displayedRank}</div>
-                <div className="hall-frame">
-                  <span className="hall-logo">
-                    {logoFor(listing) ? <img src={logoFor(listing) ?? ''} alt="" /> : listing.name.slice(0, 2)}
-                  </span>
-                </div>
-                <div className="hall-inscription">
-                  <span>{view === 'Overall' ? `#${categoryRank} in ${listing.category}` : `#${periodOverallRank} overall ${periodLabel}`}</span>
-                  <h3>{listing.name}</h3>
-                  <p>{listing.headline}</p>
-                  <blockquote>{listing.description}</blockquote>
-                </div>
-                <div className="hall-plaque-meta">
-                  <strong>{money.format(listing.bid_amount)}</strong>
-                  <span>{number.format(listing.clicks)} clicks</span>
+      <div className="category-podium-grid">
+        {visibleListings.length ? visibleListings.map((listing, index) => {
+          const categoryRank = getCategoryRank(listing, listings);
+          const periodOverallRank = listings.findIndex((entry) => entry.id === listing.id) + 1;
+          const allTimeOverallRank = allListings.findIndex((entry) => entry.id === listing.id) + 1;
+          const displayedRank = view === 'Overall' ? periodOverallRank : index + 1;
+          return (
+            <article
+              className={`category-podium-card rank-${displayedRank}`}
+              key={listing.id}
+              style={{ '--row-index': index } as CSSProperties}
+            >
+              <a className="card-click-layer" href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer" aria-label={`Visit ${listing.name}`} />
+              <div className="mini-rank">
+                <span>#{displayedRank}</span>
+              </div>
+              <div className="mini-brand">
+                <span className="mini-logo">
+                  {logoFor(listing) ? <img src={logoFor(listing) ?? ''} alt="" /> : listing.name.slice(0, 2)}
+                </span>
+              </div>
+              <div className="mini-copy">
+                <h3>{listing.name} · {listing.headline}</h3>
+                <p>{listing.description}</p>
+                <div className="mini-meta">
+                  <span>#{categoryRank} in {listing.category}</span>
+                  {view === 'Overall' ? null : <span>#{periodOverallRank} overall {periodLabel}</span>}
+                  {period === 'today' && allTimeOverallRank > 0 ? <span>#{allTimeOverallRank} all-time</span> : null}
+                  <strong>{number.format(listing.clicks)} clicks</strong>
                   <span>{formatRelativeAge(listing.created_at)}</span>
                   <a className="details-link" href={`/listing/${listing.slug}`} target="_blank" rel="noreferrer">
                     see details
                   </a>
                 </div>
-              </article>
-            );
-          }) : (
-            <article className="hall-empty">
-              <strong>No plaques in this hall yet.</strong>
-              <span>The first paid entrant becomes the opening inscription for this view.</span>
-            </article>
-          )}
-        </div>
-      ) : (
-        <div className="category-podium-grid">
-          {visibleListings.length ? visibleListings.map((listing, index) => {
-            const categoryRank = getCategoryRank(listing, listings);
-            const periodOverallRank = listings.findIndex((entry) => entry.id === listing.id) + 1;
-            const allTimeOverallRank = allListings.findIndex((entry) => entry.id === listing.id) + 1;
-            const displayedRank = view === 'Overall' ? periodOverallRank : index + 1;
-            return (
-              <article
-                className={`category-podium-card rank-${displayedRank}`}
-                key={listing.id}
-                style={{ '--row-index': index } as CSSProperties}
-              >
-                <a className="card-click-layer" href={`/visit/${listing.slug}`} target="_blank" rel="noreferrer" aria-label={`Visit ${listing.name}`} />
-                <div className="mini-rank">
-                  <span>#{displayedRank}</span>
-                </div>
-                <div className="mini-brand">
-                  <span className="mini-logo">
-                    {logoFor(listing) ? <img src={logoFor(listing) ?? ''} alt="" /> : listing.name.slice(0, 2)}
-                  </span>
-                </div>
-                <div className="mini-copy">
-                  <h3>{listing.name} · {listing.headline}</h3>
-                  <p>{listing.description}</p>
-                  <div className="mini-meta">
-                    <span>#{categoryRank} in {listing.category}</span>
-                    {view === 'Overall' ? null : <span>#{periodOverallRank} overall {periodLabel}</span>}
-                    {period === 'today' && allTimeOverallRank > 0 ? <span>#{allTimeOverallRank} all-time</span> : null}
-                    <strong>{number.format(listing.clicks)} clicks</strong>
-                    <span>{formatRelativeAge(listing.created_at)}</span>
-                    <a className="details-link" href={`/listing/${listing.slug}`} target="_blank" rel="noreferrer">
-                      see details
-                    </a>
-                  </div>
-                </div>
-                <div className="mini-bid">
-                  <strong>{money.format(listing.bid_amount)}</strong>
-                </div>
-              </article>
-            );
-          }) : (
-            <article className="category-podium-card empty-category">
-              <div className="mini-rank">
-                <span>#1</span>
               </div>
-              <div className="mini-empty">
-                <strong>No seats in this category yet.</strong>
-                <span>The first paid entrant here becomes the category leader.</span>
+              <div className="mini-bid">
+                <strong>{money.format(listing.bid_amount)}</strong>
               </div>
             </article>
-          )}
-        </div>
-      )}
+          );
+        }) : (
+          <article className="category-podium-card empty-category">
+            <div className="mini-rank">
+              <span>#1</span>
+            </div>
+            <div className="mini-empty">
+              <strong>No seats in this category yet.</strong>
+              <span>The first paid entrant here becomes the category leader.</span>
+            </div>
+          </article>
+        )}
+      </div>
     </section>
   );
 }

@@ -10,6 +10,7 @@ export function Footer() {
         <p>Paid public ranking for products, websites, and X profiles.</p>
       </div>
       <nav aria-label="Footer navigation">
+        <Link href="/hall">Hall</Link>
         <Link href="/rules">Rules</Link>
         <Link href="/terms">Terms</Link>
         <Link href="/privacy">Privacy</Link>
