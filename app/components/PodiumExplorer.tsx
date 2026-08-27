@@ -17,6 +17,8 @@ type Listing = {
   clicks: number;
 };
 
+type Period = 'all' | 'today';
+
 const money = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -30,13 +32,30 @@ function logoFor(listing: Listing) {
   return listing.logo_url;
 }
 
-export function PodiumExplorer({ listings, categories }: { listings: Listing[]; categories: string[] }) {
-  const [view, setView] = useState('Overall');
+function getCategoryRank(listing: Listing, listings: Listing[]) {
+  return listings.filter((entry) => entry.category === listing.category && entry.bid_amount >= listing.bid_amount).length;
+}
+
+export function PodiumExplorer({
+  listings,
+  allListings,
+  categories,
+  period,
+  initialView,
+}: {
+  listings: Listing[];
+  allListings: Listing[];
+  categories: string[];
+  period: Period;
+  initialView?: string;
+}) {
   const viewOptions = useMemo(() => ['Overall', ...categories], [categories]);
+  const [view, setView] = useState(initialView && viewOptions.includes(initialView) ? initialView : 'Overall');
   const visibleListings = useMemo(() => {
     const filtered = view === 'Overall' ? listings : listings.filter((listing) => listing.category === view);
     return filtered;
   }, [listings, view]);
+  const periodLabel = period === 'today' ? 'today' : 'all-time';
 
   return (
     <section className="podium-explorer" aria-label="Browse podium rankings">
@@ -53,9 +72,10 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
 
       <div className="category-podium-grid">
         {visibleListings.length ? visibleListings.map((listing, index) => {
-          const rank = index + 1;
-          const overallRank = listings.findIndex((entry) => entry.id === listing.id) + 1;
-          const displayedRank = view === 'Overall' ? overallRank : rank;
+          const categoryRank = getCategoryRank(listing, listings);
+          const periodOverallRank = listings.findIndex((entry) => entry.id === listing.id) + 1;
+          const allTimeOverallRank = allListings.findIndex((entry) => entry.id === listing.id) + 1;
+          const displayedRank = view === 'Overall' ? periodOverallRank : index + 1;
           return (
             <article
               className={`category-podium-card rank-${displayedRank}`}
@@ -74,8 +94,9 @@ export function PodiumExplorer({ listings, categories }: { listings: Listing[]; 
                 <h3>{listing.name} · {listing.headline}</h3>
                 <p>{listing.description}</p>
                 <div className="mini-meta">
-                  <span>#{rank} in {listing.category}</span>
-                  {view === 'Overall' ? null : <span>#{overallRank} overall</span>}
+                  <span>#{categoryRank} in {listing.category}</span>
+                  {view === 'Overall' ? null : <span>#{periodOverallRank} overall {periodLabel}</span>}
+                  {period === 'today' && allTimeOverallRank > 0 ? <span>#{allTimeOverallRank} all-time</span> : null}
                   <strong>{number.format(listing.clicks)} clicks</strong>
                   <a className="details-link" href={`/listing/${listing.slug}`} target="_blank" rel="noreferrer">
                     see details

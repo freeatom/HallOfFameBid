@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers';
 import DodoPayments from 'dodopayments';
+import { categories } from '@/app/categories';
 import {
   ensureDatabase,
   getTwitterHandle,
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
   const rawUrl = String(formData.get('url') ?? '');
   const url = normalizeUrl(rawUrl);
   const submittedName = String(formData.get('name') ?? '').trim().slice(0, 80);
-  const category = String(formData.get('category') ?? 'Other').trim().slice(0, 80);
+  const category = String(formData.get('category') ?? '').trim().slice(0, 80);
   let derivedName = submittedName;
   if (!derivedName && url) {
     const parsed = new URL(url);
@@ -56,9 +57,9 @@ export async function POST(request: Request) {
     'A paid Hall of Fame placement with public rank, tracked clicks, and a shareable profile.';
   const bidAmount = Number(String(formData.get('amount') ?? '').replace(/[^0-9]/g, ''));
 
-  if (!url || !isAllowedListingUrl(url) || !name || !Number.isFinite(bidAmount) || bidAmount < 1) {
+  if (!url || !isAllowedListingUrl(url) || !name || !category || !categories.includes(category) || !Number.isFinite(bidAmount) || bidAmount < 1) {
     return Response.json(
-      { error: 'Enter a valid brand, domain or X handle, and a bid of at least $1.' },
+      { error: 'Enter a valid brand, choose a category, and place a bid of at least $1.' },
       { status: 400 },
     );
   }

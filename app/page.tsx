@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers';
+import Link from 'next/link';
 import { BidComposer } from './components/BidComposer';
 import { StatsPulse } from './components/StatsPulse';
 import { Footer } from './components/Footer';
@@ -29,6 +30,14 @@ const emptySeats = [
   },
 ];
 
+type Period = 'all' | 'today';
+
+function getTodayStart() {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date.getTime();
+}
+
 function logoFor(listing: Listing) {
   if (listing.logo_key) return `/logo/${listing.logo_key}`;
   return listing.logo_url;
@@ -45,6 +54,21 @@ function Logo({ listing, size = 'large' }: { listing: Listing; size?: 'large' | 
   return (
     <div className={size === 'large' ? 'brand-mark brand-mark-large' : 'brand-mark brand-mark-small'}>
       {logo ? <img src={logo} alt={`${listing.name} logo`} /> : <span>{initials}</span>}
+    </div>
+  );
+}
+
+function PeriodToggle({ period }: { period: Period }) {
+  return (
+    <div className="period-toggle" aria-label="Leaderboard period">
+      <Link className={period === 'all' ? 'period-choice active' : 'period-choice'} href="/">
+        <span className="period-trophy" aria-hidden="true" />
+        All-time
+      </Link>
+      <Link className={period === 'today' ? 'period-choice active today' : 'period-choice today'} href="/?period=today">
+        <span className="period-dot" aria-hidden="true" />
+        Today
+      </Link>
     </div>
   );
 }
@@ -101,24 +125,35 @@ function OpenSeat({ rank, title, metal, copy, claimAmount }: (typeof emptySeats)
   );
 }
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<{ period?: string; category?: string }>;
+}) {
+  const params = searchParams ? await searchParams : {};
+  const period: Period = params.period === 'today' ? 'today' : 'all';
+  const initialView = params.category && categories.includes(params.category) ? params.category : undefined;
   const db = env.DB;
-  const listings = db ? await getListings(db) : [];
+  const allListings = db ? await getListings(db) : [];
+  const listings = db && period === 'today' ? await getListings(db, { createdSince: getTodayStart() }) : allListings;
   const stats = db ? await getStats(db) : { online: 0, visitors: 0, clicks: 0 };
   const topThree = listings.slice(0, 3);
-  const claimTop = getClaimAmount(listings);
+  const claimTop = getClaimAmount(allListings);
   const topSeats = emptySeats.map((seat, index) => ({ seat, listing: topThree[index] }));
 
   return (
     <main className="site-shell">
       <section className="hero-stage">
         <header className="topbar">
-          <a href="#" className="signature" aria-label="Hall of Fame Bid home">
-            <span className="sigil">H</span>
-            <span>
-              <strong>Hall of Fame Bid</strong>
-            </span>
-          </a>
+          <div className="brand-cluster">
+            <a href="#" className="signature" aria-label="Hall of Fame Bid home">
+              <span className="sigil">H</span>
+              <span>
+                <strong>Hall of Fame Bid</strong>
+              </span>
+            </a>
+            <PeriodToggle period={period} />
+          </div>
           <StatsPulse initial={stats} />
           <a className="nav-claim" href="#bid">
             Claim #1
@@ -145,7 +180,13 @@ export default async function Home() {
           )}
         </div>
 
-        <PodiumExplorer listings={listings} categories={categories} />
+        <PodiumExplorer
+          listings={listings}
+          allListings={allListings}
+          categories={categories}
+          period={period}
+          initialView={initialView}
+        />
       </section>
 
       <Footer />

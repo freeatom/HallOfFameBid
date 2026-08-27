@@ -71,22 +71,25 @@ export function CategorySelect({
   categories,
   initialCategory,
   name = 'category',
+  placeholder = 'Choose category',
   value,
   onChange,
 }: {
   categories: string[];
   initialCategory?: string;
   name?: string;
+  placeholder?: string;
   value?: string;
   onChange?: (category: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [internalSelected, setInternalSelected] = useState(
-    initialCategory && categories.includes(initialCategory) ? initialCategory : categories[0],
+    initialCategory && categories.includes(initialCategory) ? initialCategory : '',
   );
   const selected = value && categories.includes(value) ? value : internalSelected;
+  const label = selected || placeholder;
   const ref = useRef<HTMLDivElement>(null);
-  const SelectedIcon = icons[selected] ?? Shapes;
+  const SelectedIcon = selected ? icons[selected] ?? Shapes : Shapes;
 
   function choose(category: string) {
     setInternalSelected(category);
@@ -114,7 +117,7 @@ export function CategorySelect({
         onClick={() => setOpen((value) => !value)}
       >
         <SelectedIcon aria-hidden="true" />
-        <span>{selected}</span>
+        <span className={selected ? undefined : 'category-placeholder'}>{label}</span>
         <ChevronDown aria-hidden="true" />
       </button>
       {open ? (

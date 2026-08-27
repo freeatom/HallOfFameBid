@@ -110,10 +110,16 @@ export function BidComposer({
   }
 
   async function submit(formData: FormData) {
+    const category = String(formData.get('category') ?? '').trim();
+    if (!category) {
+      setStatus('Choose a category before claiming your seat.');
+      return;
+    }
+
     if (mode === 'compact') {
       const params = new URLSearchParams({
         amount: String(amount),
-        category: String(formData.get('category') ?? categories[0]),
+        category,
         url: String(formData.get('url') ?? ''),
       });
       window.location.href = `/claim?${params.toString()}`;
@@ -183,7 +189,7 @@ export function BidComposer({
             required
           />
         </label>
-        <CategorySelect categories={categories} initialCategory={initialCategory} />
+        <CategorySelect categories={categories} initialCategory={initialCategory} placeholder="Choose category" />
         <button className="primary-action" type="submit">
           Claim
         </button>

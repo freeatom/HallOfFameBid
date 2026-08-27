@@ -178,20 +178,22 @@ export async function ensureDatabase(db: D1Database) {
   initialized = true;
 }
 
-export async function getListings(db: D1Database) {
+export async function getListings(db: D1Database, options: { createdSince?: number } = {}) {
   await ensureDatabase(db);
-  const result = await db
-    .prepare(
-      `SELECT
-        listings.*,
-        COUNT(clicks.id) AS clicks
-      FROM listings
-      LEFT JOIN clicks ON clicks.listing_id = listings.id
-      WHERE listings.url LIKE 'https://%.%' OR listings.url LIKE 'https://x.com/%'
-      GROUP BY listings.id
-      ORDER BY listings.bid_amount DESC, listings.created_at ASC`,
-    )
-    .all<Listing>();
+  const hasCreatedSince = Number.isFinite(options.createdSince);
+  const query = `SELECT
+    listings.*,
+    COUNT(clicks.id) AS clicks
+  FROM listings
+  LEFT JOIN clicks ON clicks.listing_id = listings.id
+  WHERE (listings.url LIKE 'https://%.%' OR listings.url LIKE 'https://x.com/%')
+    ${hasCreatedSince ? 'AND listings.created_at >= ?' : ''}
+  GROUP BY listings.id
+  ORDER BY listings.bid_amount DESC, listings.created_at ASC`;
+  const statement = db.prepare(query);
+  const result = hasCreatedSince
+    ? await statement.bind(options.createdSince).all<Listing>()
+    : await statement.all<Listing>();
 
   return result.results ?? [];
 }
