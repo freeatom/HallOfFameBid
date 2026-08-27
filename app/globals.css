@@ -1046,7 +1046,7 @@ a.showcase-card {
 }
 
 .showcase-meta span:first-child {
-  color: var(--copper);
+  color: var(--gold);
   font-weight: 900;
 }
 
@@ -1219,6 +1219,28 @@ a.showcase-card {
 .category-podium-grid {
   display: grid;
   gap: 10px;
+  position: relative;
+}
+
+.category-podium-grid::before,
+.category-podium-grid::after {
+  content: '';
+  position: absolute;
+  top: 270px;
+  bottom: 0;
+  z-index: 2;
+  width: clamp(28px, 8vw, 96px);
+  pointer-events: none;
+}
+
+.category-podium-grid::before {
+  left: -1px;
+  background: linear-gradient(90deg, rgba(8, 7, 6, 0.94), rgba(8, 7, 6, 0));
+}
+
+.category-podium-grid::after {
+  right: -1px;
+  background: linear-gradient(270deg, rgba(8, 7, 6, 0.94), rgba(8, 7, 6, 0));
 }
 
 .category-podium-card {
@@ -1232,35 +1254,36 @@ a.showcase-card {
   border-top: 1px solid rgba(241, 217, 154, 0.11);
   border-radius: 0;
   background:
-    linear-gradient(90deg, rgba(24, 20, 17, 0.34), rgba(8, 7, 6, 0.02)),
+    linear-gradient(90deg, rgba(24, 20, 17, 0.38), rgba(8, 7, 6, 0.02)),
     var(--onyx);
   padding: 16px 0;
   box-shadow: none;
   cursor: pointer;
+  opacity: max(0.72, calc(1 - (var(--rank-index, 0) - 3) * 0.045));
 }
 
 .category-podium-card.rank-1 {
-  border: 1px solid rgba(224, 105, 76, 0.74);
+  border: 1px solid rgba(241, 217, 154, 0.42);
   border-radius: 26px;
   background:
-    linear-gradient(155deg, rgba(76, 36, 27, 0.74), rgba(21, 13, 10, 0.96)),
+    linear-gradient(155deg, rgba(63, 45, 20, 0.74), rgba(21, 16, 10, 0.96)),
     var(--onyx);
   padding: 18px;
-  box-shadow: 0 18px 64px rgba(224, 105, 76, 0.08);
+  box-shadow: 0 18px 64px rgba(216, 170, 83, 0.12);
 }
 
 .category-podium-card.rank-2 {
-  border: 1px solid rgba(224, 105, 76, 0.36);
+  border: 1px solid rgba(214, 213, 207, 0.28);
   border-radius: 24px;
   padding: 18px;
-  background: linear-gradient(155deg, rgba(42, 24, 20, 0.72), rgba(14, 10, 8, 0.96));
+  background: linear-gradient(155deg, rgba(38, 37, 34, 0.44), rgba(14, 12, 9, 0.96));
 }
 
 .category-podium-card.rank-3 {
-  border: 1px solid rgba(224, 105, 76, 0.28);
+  border: 1px solid rgba(184, 117, 69, 0.28);
   border-radius: 24px;
   padding: 18px;
-  background: linear-gradient(155deg, rgba(31, 20, 17, 0.74), rgba(12, 9, 8, 0.96));
+  background: linear-gradient(155deg, rgba(42, 28, 17, 0.46), rgba(12, 9, 8, 0.96));
 }
 
 .mini-rank {
@@ -1288,9 +1311,18 @@ a.showcase-card {
 .category-podium-card.rank-2 .mini-rank span,
 .category-podium-card.rank-3 .mini-rank span {
   border-color: rgba(241, 217, 154, 0.3);
-  background: linear-gradient(135deg, #f08b6d, #d96b4d);
-  color: #fff7ed;
+  background: linear-gradient(135deg, #f1d99a, #d8aa53 54%, #b87545);
+  color: #17100a;
   font-size: 16px;
+}
+
+.category-podium-card.rank-2 .mini-rank span {
+  background: linear-gradient(135deg, #f2f1ea, #c9c7bc 54%, #7d786f);
+}
+
+.category-podium-card.rank-3 .mini-rank span {
+  background: linear-gradient(135deg, #e2a56f, #b87545 54%, #6e3c22);
+  color: #fff7ed;
 }
 
 .mini-brand {
@@ -1355,7 +1387,7 @@ a.showcase-card {
 }
 
 .mini-meta span:first-child {
-  color: var(--copper);
+  color: var(--gold);
   font-weight: 900;
 }
 
@@ -1371,7 +1403,7 @@ a.showcase-card {
 }
 
 .mini-bid strong {
-  color: var(--copper);
+  color: var(--champagne);
   font-size: 18px;
   font-weight: 920;
 }
