@@ -121,21 +121,6 @@ a:focus-visible {
   animation: hallGridAwake 1200ms ease both;
 }
 
-.hero-stage::after {
-  content: '';
-  position: absolute;
-  inset: 38% -18% auto;
-  z-index: 0;
-  height: 190px;
-  background:
-    linear-gradient(90deg, transparent 0%, rgba(241, 217, 154, 0.08) 46%, rgba(184, 117, 69, 0.06) 56%, transparent 76%),
-    radial-gradient(circle at 50% 50%, rgba(216, 170, 83, 0.16), transparent 54%);
-  opacity: 0.52;
-  pointer-events: none;
-  transform: translateX(-72%);
-  animation: hallFloorSweep 8.8s ease-in-out 1.2s infinite;
-}
-
 .topbar,
 .claim-stage,
 .podium-grid,
@@ -2240,22 +2225,6 @@ a:focus-visible {
   to {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-@keyframes hallFloorSweep {
-  0%,
-  38% {
-    transform: translateX(-72%);
-    opacity: 0;
-  }
-  54% {
-    opacity: 0.52;
-  }
-  78%,
-  100% {
-    transform: translateX(72%);
-    opacity: 0;
   }
 }
 
